@@ -329,8 +329,9 @@ The project follows the report:
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/ZeroShot-Object-Counting.git
-cd ZeroShot-Object-Counting
+git clone https://github.com/paht2005/CS338.Q21_Zero-shot-Object-Coutning-with-Good-Examplers.git
+
+cd CS338.Q21_Zero-shot-Object-Coutning-with-Good-Examplers
 ```
 
 2. **Create and activate a virtual environment (recommended)**
@@ -518,4 +519,4 @@ This project is developed for **academic purposes** under the course
 
 Released under the **MIT License**.
 See the [LICENSE](./LICENSE) file for details.
-T
+

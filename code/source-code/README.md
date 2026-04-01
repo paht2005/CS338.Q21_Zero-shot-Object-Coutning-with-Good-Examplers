@@ -1,4 +1,5 @@
 ### Zero-shot Object Counting with Good Exemplars  
+This project based on this paper with new improvements
 Enhanced with Rich Prompts and YOLO-World
 
 This folder contains the **main implementation** of the VA-Count model and the
@@ -13,7 +14,7 @@ All instructions below assume the current working directory is
 
 ---
 
-## 📋 Table of Contents
+##  Table of Contents
 - [News](#news)
 - [Overview](#overview)
 - [Project Structure](#project-structure)
@@ -26,11 +27,11 @@ All instructions below assume the current working directory is
 - [Citation](#citation)
 - [Acknowledgement](#acknowledgement)
 
-## 🚀 News
+## News
 - **[2024/XX/XX]**: Code and pretrained models released
 - **[2024/XX/XX]**: Paper accepted to ECCV 2024
 
-## 📖 Overview
+## Overview
 
 VA-Count is a zero-shot object counting method that leverages good exemplars for accurate counting. The model combines:
 - Vision Transformer backbone (MAE pretrained)
@@ -38,7 +39,7 @@ VA-Count is a zero-shot object counting method that leverages good exemplars for
 - Binary classifier for single/multiple object detection
 - Cross-attention mechanism for feature matching
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 source-code/
@@ -90,7 +91,7 @@ source-code/
 └── README.md                      # This file
 ```
 
-## 🔧 Environment Setup
+## Environment Setup
 
 ### Prerequisites
 - Python 3.8+
@@ -136,12 +137,12 @@ wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alp
 cd ../..
 ```
 
-## 📊 Dataset Preparation
+## Dataset Preparation
 
 ### FSC147 Dataset
 
 1. **Download FSC147**
-   - Download from [FSC147 GitHub](https://github.com/cvlab-stonybrook/LearningToCountEverything)
+   - Download from [FSC147](https://www.kaggle.com/datasets/xuncngng/fsc147-0)
    - Extract to `./data/FSC147/`
 
 2. **Prepare data splits**
@@ -181,7 +182,7 @@ for split in ['train', 'val', 'test']:
 └── test.txt
 ```
 
-## 💾 Model Checkpoints
+## Model Checkpoints
 
 ### Download Pretrained Models (Original paper)
 
@@ -197,7 +198,7 @@ for split in ['train', 'val', 'test']:
    - Download from official MAE repository
    - Save to `./weights/mae_pretrain_vit_base_full.pth`
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Advanced Demo with Visualization
 
@@ -221,7 +222,7 @@ python FSC_test.py \
     --split test
 ```
 
-## 🎯 Training
+##  Training
 
 ### Step 1: Prepare Binary Classifier (Optional)
 
@@ -282,7 +283,7 @@ python FSC_train.py \
     --lr 1e-5
 ```
 
-## 🔍 Inference
+##  Inference
 
 
 ### Batch Inference
@@ -299,7 +300,7 @@ streamlit run demp_app_advaced.py
 
 
 
-## 📝 Citation
+##  Citation
 
 ```bibtex
 @inproceedings{zhu2024zero,
@@ -310,7 +311,7 @@ streamlit run demp_app_advaced.py
 }
 ```
 
-## 🙏 Acknowledgement
+## Acknowledgement
 
 This project is based on:
 - [CounTR](https://github.com/Verg-Avesta/CounTR) - Base counting architecture
@@ -319,10 +320,10 @@ This project is based on:
 
 We are very grateful for these excellent works!
 
-## 📧 Contact
+##  Contact
 
 If you have any questions, please contact: jsj_zhl@whut.edu.cn
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.

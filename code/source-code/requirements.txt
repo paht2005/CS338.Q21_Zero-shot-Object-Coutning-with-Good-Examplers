@@ -15,3 +15,7 @@ wandb
 tqdm
 google-generativeai>=0.3.0
 inflect>=6.0.0
+streamlit
+opencv-python
+clip @ git+https://github.com/openai/CLIP.git
+ultralytics
