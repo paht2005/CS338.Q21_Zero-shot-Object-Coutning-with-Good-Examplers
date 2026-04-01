@@ -1,0 +1,66 @@
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Editors / IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+logs/
+
+# Checkpoints and large model files (kept outside git to avoid >100MB files)
+*.pth
+*.pt
+*.ckpt
+*.onnx
+
+# Outputs and generated visualizations
+code/source-code/output/
+code/source-code/output_transfer/
+code/source-code/data/out/
+demo_outputs/
+code/source-code/visualizations/
+code/source-code/visualizations_test/
+experiments/**/data/out/
+experiments/**/visualizations/
+
+# Weights & Biases logs
+wandb/
+code/source-code/wandb/
+experiments/**/wandb/
+
+# Experiment-only heavy weights (GroundingDINO / YOLO, etc.)
+experiments/**/GroundingDINO/weights/
+experiments/**/yolo*.pt
+
+# Very large experiment notebooks (visualization only)
+experiments/**/notebook/*.ipynb
+
+# Temporary / uploads
+uploads/
+*.tmp
+
+# FSC147 dataset (ignore full data, keep only small sample)
+code/source-code/data/FSC147/
+!code/source-code/data/FSC147/sample/
+!code/source-code/data/FSC147/sample/**
+
+# FSC147 copies inside experiment folders (never tracked)
+experiments/**/data/FSC147/
+

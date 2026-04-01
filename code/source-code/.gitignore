@@ -1,0 +1,41 @@
+# Dataset images
+data/FSC147/images_384_VarV2/
+
+# Ground truth density maps
+data/FSC147/gt_density_map_adaptive_384_VarV2/
+
+# Training data
+data/FSC147/one/
+
+# Classifier related
+classify/
+
+# Model checkpoints
+data/checkpoint_FSC.pth
+data/checkpoint.pth
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment
+.env
+.venv
+env/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
