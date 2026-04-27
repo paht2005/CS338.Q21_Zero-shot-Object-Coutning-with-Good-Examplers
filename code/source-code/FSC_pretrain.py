@@ -129,9 +129,9 @@ class TrainData(Dataset):
         im_id = self.img[idx]
         anno = annotations[im_id]
         bboxes = anno['box_examples_coordinates']
-        # box_coordinates = anno.get('box_examples_coordinates', {})  # 获取图像的边界框坐标信息
+        # box_coordinates = anno.get('box_examples_coordinates', {})  # Bounding-box coordinates for this image
         # # print(box_coordinates)
-        # # 获取第一个类别的边界框坐标列表
+        # # Bounding-box list for the first category
         # first_category = next(iter(box_coordinates), None)
         # # print(first_category)
         # first_category_bboxes = box_coordinates[first_category]

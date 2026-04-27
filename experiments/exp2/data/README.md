@@ -1,8 +1,8 @@
 # VA-Count: Zero-shot Object Counting with Good Exemplars
-# This project based on this paper with new improvements
+# This project re-implements the VA-Count paper with new improvements
 
 
-## 📋 Table of Contents
+## Table of Contents
 - [News](#news)
 - [Overview](#overview)
 - [Project Structure](#project-structure)
@@ -15,18 +15,25 @@
 - [Citation](#citation)
 - [Acknowledgement](#acknowledgement)
 
-## 🚀 News
-- **[2024/XX/XX]**: Code and pretrained models released
-- **[2024/XX/XX]**: Paper accepted to ECCV 2024
+## Project History
 
-## 📖 Overview
+> This README is an archived snapshot kept inside `experiments/exp2/data/` for
+> reproducibility of the original `exp2` run. For the up-to-date CS338.Q21
+> instructions, use `code/source-code/README.md` at the repository root.
+
+- ECCV 2024: Original VA-Count paper published.
+- CS338.Q21 (2026): Re-implementation of VA-Count from the paper, extended with
+  Rich Prompt and YOLO-World, plus the LaTeX report under
+  `docs/report/Report.pdf`.
+
+## Overview
 VA-Count is a zero-shot object counting method that leverages good exemplars for accurate counting. The model combines:
 - Vision Transformer backbone (MAE pretrained)
 - Grounding DINO for exemplar detection
 - Binary classifier for single/multiple object detection
 - Cross-attention mechanism for feature matching
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 VA-Count/
@@ -79,7 +86,7 @@ VA-Count/
 ├── grounding_neg.py               # Generate negative exemplars
 ├── yolo_pos_withPrompt.py         # YOLO with prompts (positive)
 ├── yolo_neg.py                    # YOLO for negative examples
-├── pos_yolo_withoutPrompt.py      # YOLO without prompts
+├── yolo_pos_withoutPrompt.py      # YOLO without prompts
 ├── demo_app_advanced.py           # Advanced demo application
 ├── demo_inference.py              # Basic inference demo
 ├── demo_pipeline_advanced.py      # Advanced pipeline demo
@@ -89,7 +96,7 @@ VA-Count/
 └── README.md                      # This file
 ```
 
-## 🔧 Environment Setup
+## Environment Setup
 
 ### Prerequisites
 - Python 3.8+
@@ -100,8 +107,8 @@ VA-Count/
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/VA-Count.git
-cd VA-Count
+git clone https://github.com/paht2005/CS338.Q21_Zero-shot-Object-Coutning-with-Good-Examplers.git
+cd CS338.Q21_Zero-shot-Object-Coutning-with-Good-Examplers
 ```
 
 2. **Create conda environment**
@@ -135,7 +142,7 @@ wget https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alp
 cd ../..
 ```
 
-## 📊 Dataset Preparation
+## Dataset Preparation
 
 ### FSC147 Dataset
 
@@ -180,7 +187,7 @@ for split in ['train', 'val', 'test']:
 └── test.txt
 ```
 
-## 💾 Model Checkpoints
+## Model Checkpoints
 
 ### Download Pretrained Models (Original paper)
 
@@ -196,7 +203,7 @@ for split in ['train', 'val', 'test']:
    - Download from official MAE repository
    - Save to `./weights/mae_pretrain_vit_base_full.pth`
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Advanced Demo with Visualization
 
@@ -220,7 +227,7 @@ python FSC_test.py \
     --split test
 ```
 
-## 🎯 Training
+## Training
 
 ### Step 1: Prepare Binary Classifier (Optional)
 
@@ -251,7 +258,7 @@ Alternative: Use YOLO for exemplar generation
 python yolo_pos_withPrompt.py --root_path ./data/FSC147/
 
 # Without prompts
-python pos_yolo_withoutPrompt.py --root_path ./data/FSC147/
+python yolo_pos_withoutPrompt.py --root_path ./data/FSC147/
 ```
 
 ### Step 3: Pretraining (Optional)
@@ -281,7 +288,7 @@ python FSC_train.py \
     --lr 1e-5
 ```
 
-## 🔍 Inference
+## Inference
 
 
 ### Batch Inference
@@ -290,15 +297,15 @@ python FSC_train.py \
 python FSC_test.py
 ```
 
-### APP
+### Streamlit demo
 
 ```bash
-streamlit run demp_app_advaced.py
+streamlit run demo_app_advanced.py
 ```
 
 
 
-## 📝 Citation
+## Citation
 
 ```bibtex
 @inproceedings{zhu2024zero,
@@ -309,7 +316,7 @@ streamlit run demp_app_advaced.py
 }
 ```
 
-## 🙏 Acknowledgement
+## Acknowledgement
 
 This project is based on:
 - [CounTR](https://github.com/Verg-Avesta/CounTR) - Base counting architecture
@@ -318,10 +325,13 @@ This project is based on:
 
 We are very grateful for these excellent works!
 
-## 📧 Contact
+## Contact
 
-If you have any questions, please contact: jsj_zhl@whut.edu.cn
+For questions about this CS338.Q21 project, please contact the team leader
+**Nguyễn Công Phát — `23521143@gm.uit.edu.vn`**. For questions about the
+original VA-Count paper, please refer to the upstream authors.
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License — see [LICENSE.txt](../../../LICENSE.txt)
+at the repository root for details.

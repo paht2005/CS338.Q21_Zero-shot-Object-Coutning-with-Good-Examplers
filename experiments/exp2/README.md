@@ -12,5 +12,5 @@ Typical contents:
 - `wandb/` – Weights & Biases logs for training and evaluation
 
 This folder is mainly for **reproducibility and debugging**.  
-To run the main code, use the project under `code/cs331-source-code` instead.
+To run the main code, use the project under `code/source-code` instead.
 

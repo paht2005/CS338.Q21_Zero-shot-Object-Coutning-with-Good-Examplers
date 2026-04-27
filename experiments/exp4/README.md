@@ -1,7 +1,8 @@
 ### Experiment exp4
 
 This folder stores an additional set of VA-Count / Rich Prompt / YOLO-World
-experiments used during development of the CS331 project.
+experiment runs produced by the CS338.Q21 team and used as the baseline
+reference when writing the report.
 
 Contents:
 

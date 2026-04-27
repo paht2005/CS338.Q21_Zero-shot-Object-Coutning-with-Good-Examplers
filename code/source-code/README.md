@@ -1,6 +1,5 @@
-### Zero-shot Object Counting with Good Exemplars  
-This project based on this paper with new improvements
-Enhanced with Rich Prompts and YOLO-World
+### Zero-shot Object Counting with Good Exemplars
+**Enhanced with Rich Prompts and YOLO-World — CS338.Q21 (Pattern Recognition, UIT)**
 
 This folder contains the **main implementation** of the VA-Count model and the
 project-specific extensions:
@@ -15,7 +14,7 @@ All instructions below assume the current working directory is
 ---
 
 ##  Table of Contents
-- [News](#news)
+- [Project History](#project-history)
 - [Overview](#overview)
 - [Project Structure](#project-structure)
 - [Environment Setup](#environment-setup)
@@ -27,9 +26,27 @@ All instructions below assume the current working directory is
 - [Citation](#citation)
 - [Acknowledgement](#acknowledgement)
 
-## News
-- **[2024/XX/XX]**: Code and pretrained models released
-- **[2024/XX/XX]**: Paper accepted to ECCV 2024
+## Project History
+
+This codebase was built from scratch for CS338.Q21 (Pattern Recognition,
+UIT) as a re-implementation of the ECCV 2024 **VA-Count** paper, extended
+with two independent additions from the literature:
+
+- **Rich Prompts** (Zhu et al., 2025): Gemini-generated visual descriptions
+  + CLIP re-ranking to obtain higher-quality positive/negative exemplars.
+- **YOLO-World** (Cheng et al., 2024): a fast open-vocabulary detector used
+  as a drop-in replacement for GroundingDINO in the exemplar-extraction
+  stage.
+
+The team's deliverables include:
+
+- Repository structure (`docs/`, `configs/`, `scripts/`) with the Gemini API
+  key kept out of source code (loaded from a local `.env`).
+- Training, evaluation, exemplar-generation and Streamlit-demo scripts.
+- A 26-page bilingual LaTeX report (`docs/report/Report.pdf`) with full
+  methodology, figures and result tables.
+- The `wandb` runs archived under `experiments/exp{2,3,4,5}/wandb/`, which
+  are the source of every MAE / RMSE / latency number quoted below.
 
 ## Overview
 
@@ -81,7 +98,7 @@ source-code/
 ├── grounding_neg.py               # Generate negative exemplars with GroundingDINO
 ├── yolo_pos_withPrompt.py         # YOLO-World positive exemplars with prompts
 ├── yolo_neg.py                    # YOLO-World negative exemplars
-├── pos_yolo_withoutPrompt.py      # YOLO-World positive exemplars without prompts
+├── yolo_pos_withoutPrompt.py      # YOLO-World positive exemplars without prompts
 ├── demo_app_advanced.py           # Advanced demo application (UI + visualization)
 ├── demo_inference.py              # Basic command-line inference demo
 ├── demo_pipeline_advanced.py      # Advanced end-to-end pipeline demo
@@ -94,16 +111,16 @@ source-code/
 ## Environment Setup
 
 ### Prerequisites
-- Python 3.8+
-- CUDA 11.3+ (for GPU support)
-- PyTorch 1.12+
+- Python 3.9+
+- CUDA 11.7+ (for GPU support; CPU / Apple Silicon MPS also work)
+- PyTorch 2.0+
 
 ### Installation
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/VA-Count.git
-cd VA-Count
+git clone https://github.com/paht2005/CS338.Q21_Zero-shot-Object-Coutning-with-Good-Examplers.git
+cd CS338.Q21_Zero-shot-Object-Coutning-with-Good-Examplers
 ```
 
 2. **Create conda environment**
@@ -112,24 +129,29 @@ conda create -n vacount python=3.12
 conda activate vacount
 ```
 
-3. **Install PyTorch** (example for CUDA 11.3)
-```bash
-pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113
-```
-
-4. **Install Grounding DINO**
+3. **Install Grounding DINO**
 ```bash
 cd GroundingDINO
 pip install -e .
 cd ..
 ```
 
-5. **Install other dependencies**
+4. **Install Python dependencies**
+
 ```bash
 pip install -r requirements.txt
 ```
 
-6. **Download Grounding DINO weights**
+The default `requirements.txt` targets modern PyTorch (`torch>=2.0`) and works
+on macOS (CPU / MPS), Linux CPU, and CUDA >= 11.7. To reproduce the exact
+MAE / RMSE / latency numbers reported in `docs/report/Report.pdf` on a
+CUDA 11.6 box, install the legacy pin file instead:
+
+```bash
+pip install -r requirements-cuda116.txt
+```
+
+5. **Download Grounding DINO weights**
 ```bash
 mkdir -p GroundingDINO/weights
 cd GroundingDINO/weights
@@ -253,7 +275,7 @@ Alternative: Use YOLO for exemplar generation
 python yolo_pos_withPrompt.py --root_path ./data/FSC147/
 
 # Without prompts
-python pos_yolo_withoutPrompt.py --root_path ./data/FSC147/
+python yolo_pos_withoutPrompt.py --root_path ./data/FSC147/
 ```
 
 ### Step 3: Pretraining (Optional)
@@ -292,15 +314,19 @@ python FSC_train.py \
 python FSC_test.py
 ```
 
-### APP
+### Streamlit demo
 
 ```bash
-streamlit run demp_app_advaced.py
+# Configure the Gemini API key once (see ../.env.example) and then:
+streamlit run demo_app_advanced.py
 ```
 
 
 
 ##  Citation
+
+If you build on this code, please cite the original VA-Count paper and
+acknowledge this CS338.Q21 fork:
 
 ```bibtex
 @inproceedings{zhu2024zero,
@@ -318,12 +344,18 @@ This project is based on:
 - [GroundingDINO](https://github.com/IDEA-Research/GroundingDINO) - Exemplar detection
 - [MAE](https://github.com/facebookresearch/mae) - Vision Transformer backbone
 
-We are very grateful for these excellent works!
+The CS338.Q21 implementation builds on these works to deliver the
+training, evaluation, exemplar-generation and demo pipeline described
+above. We are very grateful for all of these excellent works.
 
-##  Contact
+## Contact
 
-If you have any questions, please contact: jsj_zhl@whut.edu.cn
+For questions about this CS338.Q21 project, please contact the team leader:
+**Nguyễn Công Phát — `23521143@gm.uit.edu.vn`**.
+For questions about the original VA-Count paper, please refer to the
+authors of the upstream repository.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the MIT License — see [LICENSE.txt](../../LICENSE.txt) at the
+repository root for details.

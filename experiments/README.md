@@ -1,7 +1,9 @@
 ### Experiments directory
 
 This folder stores archived experiment runs and logs that support the results
-reported in the project report (`CS331_Report.pdf`).
+reported in the project report (`docs/report/Report.pdf`). All runs were
+produced by the CS338.Q21 team while training and evaluating the VA-Count
+baseline and its Rich Prompt / YOLO-World extensions.
 
 Each subfolder typically contains:
 

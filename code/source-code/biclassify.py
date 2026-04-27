@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 import clip
 import re
 import torchvision.models as models
-# 1. 读取数据和预处理
+# 1. Data loading and preprocessing
 def read_label_file(file_path):
     data = []
     with open(file_path, 'r') as f:
@@ -18,34 +18,34 @@ def read_label_file(file_path):
             image_name, label = line.strip().split(',')
             data.append([image_name, 1 if label == 'one' else 0])
     return pd.DataFrame(data, columns=['image', 'label'])
-# 读取a.txt中的图片名称
+# Read image names listed in train.txt
 with open('./data/FSC147/train.txt', 'r') as file:
     a_txt_images = file.read().splitlines()
 
-# 提取.jpg前的数字
+# Extract the numeric image id (before .jpg)
 a_txt_numbers = set([name.split('.')[0] for name in a_txt_images])
 
-# 从label.txt中读取图片名称和标签
+# Read image names and labels from labels.txt
 with open('./data/FSC147/one/labels.txt', 'r') as file:
     label_txt_lines = file.read().splitlines()
 
-# 筛选出存在于a.txt中的图片
+# Keep only images that also appear in train.txt
 filtered_images = []
 for line in label_txt_lines:
     image_name, label = line.strip().split(',')
-    # 使用正则表达式匹配开头的数字
+    # Match the leading numeric id with a regex
     match = re.match(r'(\d+)', image_name)
     if match:
         image_number = match.group(1)
         if image_number in a_txt_numbers:
-            # 转换'label'的值
+            # Convert label string to 0/1
             label_value = 1 if label == 'one' else 0
-            filtered_images.append([image_name, label_value])  # 注意这里是列表，以匹配read_label_file的输出
+            filtered_images.append([image_name, label_value])  # List form matches read_label_file output
 
-# 将筛选后的图片和标签转换为DataFrame，确保列名与read_label_file函数的输出相匹配
+# Convert filtered images and labels to a DataFrame with the same columns as read_label_file
 df_filtered = pd.DataFrame(filtered_images, columns=['image', 'label'])
 
-# 自定义Dataset类
+# Custom Dataset class
 class CustomDataset(Dataset):
     def __init__(self, dataframe, root_dir, transform=None):
         self.dataframe = dataframe
@@ -63,14 +63,14 @@ class CustomDataset(Dataset):
             image = self.transform(image)
         return image, label
 
-# 2. 数据集划分
+# 2. Train/test split
 data_folder = './data/FSC147/one'
 label_file = os.path.join(data_folder, 'labels.txt')
 df = read_label_file(label_file)
 df = df_filtered
 train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
 
-# 3. 数据加载
+# 3. Dataloaders
 transform = Compose([
     Resize((224, 224)),
     ToTensor(),
@@ -83,16 +83,16 @@ test_dataset = CustomDataset(test_df, data_folder, transform=transform)
 train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
 
-# 4. 模型定义
+# 4. Model definitions
 class ClipClassifier(nn.Module):
     def __init__(self, clip_model, embed_dim=512):
         super(ClipClassifier, self).__init__()
         self.clip_model = clip_model
-        # 冻结CLIP模型的参数
+        # Freeze the CLIP backbone
         for param in self.clip_model.parameters():
             param.requires_grad = False
         self.fc = nn.Linear(clip_model.visual.output_dim, embed_dim)
-        self.classifier = nn.Linear(embed_dim, 2)  # 二分类
+        self.classifier = nn.Linear(embed_dim, 2)  # Binary classification head
 
     def forward(self, images):
         with torch.no_grad():
@@ -104,19 +104,19 @@ class ClipClassifier(nn.Module):
 class ResNetClassifier(nn.Module):
     def __init__(self, num_classes=2):
         super(ResNetClassifier, self).__init__()
-        # 加载预训练的ResNet50模型
+        # Load a pretrained ResNet-50 backbone
         self.resnet50 = models.resnet50(pretrained=True)
-        # 冻结所有预训练层的参数
+        # Freeze all pretrained layers
         for param in self.resnet50.parameters():
             param.requires_grad = False
-        # 替换最后的全连接层以适应二分类任务
+        # Replace the final FC layer for binary classification
         num_ftrs = self.resnet50.fc.in_features
         self.resnet50.fc = nn.Linear(num_ftrs, num_classes)
 
     def forward(self, images):
         return self.resnet50(images)
 
-# 5. 训练和测试
+# 5. Training and evaluation
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 clip_model, _ = clip.load("ViT-B/32", device=device)
 model = ClipClassifier(clip_model).to(device)

@@ -56,6 +56,12 @@ experiments/**/notebook/*.ipynb
 uploads/
 *.tmp
 
+# Secrets (.env files must never be committed)
+.env
+.env.local
+.env.*.local
+code/source-code/.env
+
 # FSC147 dataset (ignore full data, keep only small sample)
 code/source-code/data/FSC147/
 !code/source-code/data/FSC147/sample/
@@ -63,4 +69,21 @@ code/source-code/data/FSC147/
 
 # FSC147 copies inside experiment folders (never tracked)
 experiments/**/data/FSC147/
+
+# LaTeX build artefacts (keep main.tex, references.bib, figures/, Report.pdf)
+docs/report/*.aux
+docs/report/*.log
+docs/report/*.out
+docs/report/*.toc
+docs/report/*.lof
+docs/report/*.lot
+docs/report/*.bbl
+docs/report/*.blg
+docs/report/*.synctex.gz
+docs/report/*.fdb_latexmk
+docs/report/*.fls
+docs/report/_minted-*/
+docs/report/*.nav
+docs/report/*.snm
+docs/report/*.vrb
 

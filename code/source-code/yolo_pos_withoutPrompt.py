@@ -77,7 +77,7 @@ def process_images(text_file_path, dataset_path, yolo_model, preprocess, output_
                 boxes_dict[image_name] = [[0, 0, 20, 20]] * 3
                 continue
             
-            # Chuyển về CPU và numpy ngay
+            # Move to CPU/numpy immediately
             boxes = results[0].boxes.xyxy.cpu().numpy()
             confs = results[0].boxes.conf.cpu().numpy()
             
@@ -93,7 +93,7 @@ def process_images(text_file_path, dataset_path, yolo_model, preprocess, output_
                     y2 - y1 < 5 or x2 - x1 < 5):
                     print(f"Skipping patch at box {box}")
                     continue
-                # Lưu numpy array, không phải tensor
+                # Store as a numpy array (not a tensor)
                 top_patches.append((i, float(conf), box.copy()))
             
             top_patches.sort(key=lambda x: x[1], reverse=True)
@@ -106,7 +106,7 @@ def process_images(text_file_path, dataset_path, yolo_model, preprocess, output_
                 else:
                     top_3_boxes.append(np.array([0, 0, 20, 20]))
             
-            # Chuyển sang list
+            # Convert to plain Python lists for JSON serialization
             boxes_dict[image_name] = [box.tolist() for box in top_3_boxes]
     
     return boxes_dict

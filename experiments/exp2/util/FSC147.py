@@ -405,16 +405,15 @@ class ResizeTrainImage(ResizeSomeImage):
             neg_boxes.append(neg_bbox)
         neg_boxes = torch.stack(neg_boxes)
         # if len(boxes) > 0:
-        #     boxes = torch.stack(boxes)  # 如果 boxes 非空，则正常执行 torch.stack
+        #     boxes = torch.stack(boxes)  # If boxes is non-empty, stack normally.
         #     boxes1 = boxes
         # else:
         #     boxes = boxes1
         #     pass
-        # # 如果 boxes 为空，您可以选择跳过这个样本，或者提供一个默认的边界框
-        # # 例如，使用一个表示图像全区域的默认边界框
-        #     default_box = torch.tensor([[0, 0],[0, 0],0, 0])  # 一个示例的默认边界框，具体值取决于您的应用
-        #     boxes = default_box.unsqueeze(0)  # 增加一个维度以符合 torch.stack 的要求
-        #     # pass
+        # # If `boxes` is empty, either skip the sample or provide a default box.
+        # # For example, a default box covering the whole image:
+        # #     default_box = torch.tensor([[0, 0], [0, 0], 0, 0])  # placeholder default
+        # #     boxes = default_box.unsqueeze(0)  # add batch dim for torch.stack
         if aug_flag:
             pos = torch.tensor([])
         else:

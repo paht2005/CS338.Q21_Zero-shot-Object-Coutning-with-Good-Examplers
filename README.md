@@ -31,9 +31,13 @@
 > The system targets **generalized object counting in unseen classes** using **FSC147**,  
 > and is evaluated with standard metrics (**MAE, RMSE**) and detailed latency measurements.
 
-The full written report is stored at the root as: **`Report.pdf`**.  
-Full project artifacts (including large checkpoints and raw experiment logs) are hosted on OneDrive:  
-**[Full project on OneDrive](YOUR_ONEDRIVE_LINK_HERE)**.
+The full written report is stored at: **[`docs/report/Report.pdf`](docs/report/Report.pdf)**.  
+Heavy artifacts (full checkpoints, raw `wandb` runs, full FSC147 dataset, GroundingDINO /
+YOLO-World weights) are hosted **outside Git** to keep the repository under GitHub's
+100 MB file limit. Once a permanent share link is available, paste it here:
+
+> **Full project artifacts (OneDrive):** _link to be added — see
+> `docs/report/Report.pdf` §4.1 for the list of files expected._
 
 ---
 
@@ -50,6 +54,20 @@ Full project artifacts (including large checkpoints and raw experiment logs) are
 | 1   | 23521143   | Nguyen Cong Phat | Leader | [paht2005](https://github.com/paht2005)                  | 23521143@gm.uit.edu.vn |
 | 2   | 23520158   | Mai Thai Binh    | Member | [maibinhkznk209](https://github.com/maibinhkznk209/)     | 23520158@gm.uit.edu.vn |
 | 3   | 23520213   | Vu Viet Cuong    | Member | [Kun05-AI](https://github.com/Kun05-AI)                  | 23520213@gm.uit.edu.vn |
+
+Per-member responsibilities and the agreed contribution split are tracked in
+[`docs/CONTRIBUTIONS.md`](docs/CONTRIBUTIONS.md).
+
+> **About this project.** This repository is the team's own re-implementation
+> of the ECCV 2024 **VA-Count** paper, extended with two independent additions
+> from the literature: **Rich Prompts** (Zhu et al., 2025) for higher-quality
+> exemplar generation, and **YOLO-World** (Cheng et al., 2024) as a
+> drop-in replacement for GroundingDINO in the exemplar-extraction stage. The
+> codebase is structured around four reproducible artifacts: training, testing,
+> exemplar generation, and an interactive Streamlit demo. Every MAE / RMSE /
+> latency number quoted in this README is traceable to a `wandb` run archived
+> under `experiments/exp{2,3,4,5}/wandb/` — see
+> [`docs/RESULTS.md`](docs/RESULTS.md) for the exact provenance per number.
 
 ---
 
@@ -70,6 +88,7 @@ Full project artifacts (including large checkpoints and raw experiment logs) are
 - [Experimental Results (High-level)](#experimental-results-high-level)
 - [Limitations & Future Work](#limitations--future-work)
 - [License](#license)
+- [Further Reading](#further-reading)
 
 ---
 
@@ -330,7 +349,6 @@ The project follows the report:
 
 ```bash
 git clone https://github.com/paht2005/CS338.Q21_Zero-shot-Object-Coutning-with-Good-Examplers.git
-
 cd CS338.Q21_Zero-shot-Object-Coutning-with-Good-Examplers
 ```
 
@@ -348,6 +366,15 @@ source .venv/bin/activate        # Linux/macOS
 cd code/source-code
 pip install -r requirements.txt
 ```
+
+> The default `requirements.txt` targets modern PyTorch (`torch>=2.0`) and
+> works on macOS (CPU / MPS), Linux CPU, and CUDA >= 11.7. To reproduce the
+> exact MAE / RMSE / latency numbers reported in `docs/report/Report.pdf`
+> on a CUDA 11.6 box, install `requirements-cuda116.txt` instead:
+>
+> ```bash
+> pip install -r requirements-cuda116.txt
+> ```
 
 4. **Install GroundingDINO (editable)**
 
@@ -420,7 +447,7 @@ python grounding_neg.py --root_path ./data/FSC147/
 python yolo_pos_withPrompt.py --root_path ./data/FSC147/
 
 # Without prompts
-python pos_yolo_withoutPrompt.py --root_path ./data/FSC147/
+python yolo_pos_withoutPrompt.py --root_path ./data/FSC147/
 
 # Negative examples
 python yolo_neg.py --root_path ./data/FSC147/
@@ -441,41 +468,59 @@ exemplar-generation scripts.
 
 ## **Demo Application**
 
-For interactive visualization and inspection of the counting results:
-
-- **Advanced demo with visualization**:
+The interactive demo is a **Streamlit** app at
+`code/source-code/demo_app_advanced.py`. Configure your Gemini API key first
+(see `.env.example`), then run:
 
 ```bash
-python demo_app_advanced.py \
-    --resume ./data/checkpoint_FSC.pth \
-    --data_path ./data/FSC147 \
-    --output_dir ./demo_outputs \
-    --visualize
+cd code/source-code
+streamlit run demo_app_advanced.py
 ```
 
-Additional demo and visualization scripts are available:
+The app lets you:
 
-- `demo_inference.py`
-- `demo_pipeline_advanced.py`
-- `demo_visualization.py`
+- Upload an image and type an English class name (e.g. `oranges`).
+- Pick the extractor (**YOLO-World** or **GroundingDINO**) and toggle
+  **Rich Prompt** on/off.
+- See the predicted count, the density-map overlay, the chosen positive /
+  negative bounding boxes, and a comparison with ground-truth when available.
 
-Each script focuses on a specific aspect (pipeline demonstration, visualization, etc.)
-and is documented in `code/source-code/README.md`.
+Supporting modules consumed by the Streamlit app:
+
+- `demo_inference.py` — model loading, prompt expansion, single-image
+  inference helpers.
+- `demo_pipeline_advanced.py` — end-to-end VA-Count + Rich Prompt + YOLO
+  pipeline.
+- `demo_visualization.py` — overlay / heat-map / box drawing utilities.
+
+For headless / CLI evaluation of the network use `FSC_test.py` instead — see
+[`code/source-code/README.md`](code/source-code/README.md) for full details.
 
 ---
 
 ## **Experimental Results (High-level)**
 
-On **FSC147**, the project observes:
+On the **FSC-147 test split**:
 
-- **Rich Prompt** integration slightly improves baseline VA-Count accuracy (MAE and RMSE).
-- **YOLO-World** dramatically reduces exemplar extraction time, at a small cost in raw MAE.
-- **YOLO-World + Rich Prompt** achieves a strong **trade-off**:
-  - Accuracy comparable to or slightly better than the original VA-Count.
-  - Much faster inference suitable for demo and near real-time use.
+| Model                                        | MAE ↓     | RMSE ↓    | Demo time (s/img) ↓ |
+|----------------------------------------------|-----------|-----------|---------------------|
+| VA-Count (baseline)                          | 17.99     | 129.39    | 1.4710              |
+| VA-Count + Rich Prompt                       | **17.80** | 129.69    | 5.7578              |
+| VA-Count + YOLO-World                        | 19.03     | 131.55    | **0.6006**          |
+| **VA-Count + YOLO-World + Rich Prompt**      | 17.91     | 130.98    | 2.4054              |
 
-Exact numbers (MAE, RMSE, runtime) and tables are provided in `Report.pdf`
-and can be reproduced from runs archived under `experiments/`.
+- **Rich Prompt** improves accuracy slightly on the GroundingDINO baseline
+  (MAE 17.99 → 17.80) and substantially on the YOLO-World variant
+  (MAE 19.03 → 17.91).
+- **YOLO-World alone** is 2.5× faster at demo-time but loses ~1 MAE versus
+  GroundingDINO; pairing it with Rich Prompt recovers the accuracy.
+- **`YOLO-World + Rich Prompt`** is the **default deployed configuration** —
+  near-baseline MAE (17.91) at acceptable interactive latency (~2.4 s/image).
+
+Full per-table breakdown (counting accuracy, exemplar-extraction wall-clock,
+demo latency, failure-case taxonomy, dataset / checkpoint provenance) is in
+[`docs/RESULTS.md`](docs/RESULTS.md) and Chapter 3 of
+[`docs/report/Report.pdf`](docs/report/Report.pdf).
 
 ---
 
@@ -518,5 +563,20 @@ This project is developed for **academic purposes** under the course
 **CS338.Q21 – Pattern Recognition** at the **University of Information Technology (UIT)**.
 
 Released under the **MIT License**.
-See the [LICENSE](./LICENSE) file for details.
+See the [LICENSE.txt](./LICENSE.txt) file for details.
 
+---
+
+## **Further Reading**
+
+- Final report (Vietnamese): [`docs/report/Report.pdf`](docs/report/Report.pdf)
+  — 26-page bilingual write-up with full methodology, tables and failure
+  analysis. Build instructions: [`docs/report/README.md`](docs/report/README.md).
+- Numerical results & provenance: [`docs/RESULTS.md`](docs/RESULTS.md).
+- Per-member contributions: [`docs/CONTRIBUTIONS.md`](docs/CONTRIBUTIONS.md).
+- Source-code level instructions: [`code/source-code/README.md`](code/source-code/README.md).
+- Figure provenance for the LaTeX report:
+  [`docs/report/figures/README.md`](docs/report/figures/README.md).
+- Archived experiment runs (`wandb`, qualitative outputs):
+  [`experiments/README.md`](experiments/README.md) and the per-experiment
+  READMEs under `experiments/exp{2,3,4,5}/`.
