@@ -11,8 +11,9 @@ Contents:
 - `yolov8x-worldv2.pt` – YOLO-World checkpoint used in this experiment
 
 These runs correspond to the **YOLO-World** and **YOLO-World + Rich Prompt**
-configurations discussed in Section 4.3 and the experimental tables of `CS331_Report.pdf`.
+configurations discussed in Chapter 2 and the experimental tables of
+`docs/report/Report.pdf`.
 
 To reproduce or extend these experiments, use the main codebase under
-`code/cs331-source-code` and point it to this experiment directory as needed.
+`code/source-code` and point it to this experiment directory as needed.
 

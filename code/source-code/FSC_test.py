@@ -111,8 +111,8 @@ class TestData(Dataset):
         bboxes = anno['box_examples_coordinates']
         dots = np.array(anno['points'])
 
-        # 加载负样本的框
-        neg_anno = self.neg_annotations[im_id]  # 假设每个图像ID在负样本注释中都有对应的条目
+        # Load the bounding boxes for negative exemplars
+        neg_anno = self.neg_annotations[im_id]  # Assumes every image id has a matching entry in the negative annotations
         neg_bboxes = neg_anno['box_examples_coordinates']
 
         rects = list()
@@ -162,64 +162,64 @@ class TestData(Dataset):
         return sample['image'], sample['gt_density'], len(dots), sample['boxes'], sample['neg_boxes'], sample['pos'],sample['m_flag'], im_id
 
 def batched_rmse(predictions, targets, batch_size=100):
-    """
-    分批计算RMSE
-    :param predictions: 模型预测的值，一个PyTorch张量
-    :param targets: 真实的值，一个PyTorch张量，与predictions形状相同
-    :param batch_size: 每个批次的大小
-    :return: RMSE值
+    """Compute RMSE in mini-batches.
+
+    :param predictions: Tensor of predicted values from the model.
+    :param targets: Tensor of ground-truth values, same shape as predictions.
+    :param batch_size: Batch size used for the running accumulation.
+    :return: RMSE scalar tensor.
     """
     total_mse = 0.0
     total_count = 0
 
-    # 分批处理
+    # Mini-batch processing
     for i in range(0, len(predictions), batch_size):
         batch_predictions = predictions[i:i+batch_size]
         batch_targets = targets[i:i+batch_size]
         
-        # 确保使用float64进行计算以提高精度
+        # Use float64 to improve numerical precision
         batch_predictions = batch_predictions.double()
         batch_targets = batch_targets.double()
 
-        # 计算批次的MSE
+        # Per-batch MSE
         difference = batch_predictions - batch_targets
         mse = torch.mean(difference ** 2)
 
-        # 累加MSE和计数
+        # Accumulate weighted MSE and the count
         total_mse += mse * len(batch_predictions)
         total_count += len(batch_predictions)
 
-    # 计算平均MSE
+    # Average MSE over all elements
     avg_mse = total_mse / total_count
 
-    # 计算RMSE
+    # Final RMSE
     rmse_val = torch.sqrt(avg_mse)
 
     return rmse_val
 def batched_mae(predictions, targets, batch_size=100):
-    """
-    分批计算MAE
-    :param predictions: 模型预测的值，一个PyTorch张量
-    :param targets: 真实的值，一个PyTorch张量，与predictions形状相同
-    :param batch_size: 每个批次的大小
-    :return: MAE值
+    """Compute MAE in mini-batches.
+
+    :param predictions: Tensor of predicted values from the model.
+    :param targets: Tensor of ground-truth values, same shape as predictions.
+    :param batch_size: Batch size used for the running accumulation.
+    :return: MAE scalar tensor.
     """
     total_mae = 0.0
     total_count = 0
 
-    # 分批处理
+    # Mini-batch processing
     for i in range(0, len(predictions), batch_size):
         batch_predictions = predictions[i:i+batch_size]
         batch_targets = targets[i:i+batch_size]
         
-        # 计算批次的绝对误差
+        # Per-batch absolute errors
         absolute_errors = torch.abs(batch_predictions - batch_targets)
         
-        # 累加绝对误差和计数
+        # Accumulate the sum of absolute errors and the count
         total_mae += torch.sum(absolute_errors)
         total_count += len(batch_predictions)
 
-    # 计算平均绝对误差
+    # Mean absolute error
     avg_mae = total_mae / total_count
 
     return avg_mae
@@ -290,7 +290,7 @@ def main(args):
     total_count = 0
     sub_batch_size = 50
     for val_samples, val_gt_density, val_n_ppl, val_boxes,neg_val_boxes, val_pos, _, val_im_names in tqdm(data_loader_test, total=len(data_loader_test), desc="Validation"):
-        val_samples = val_samples.to(device, non_blocking=True, dtype=torch.float)  # 使用更高精度
+        val_samples = val_samples.to(device, non_blocking=True, dtype=torch.float)  # Use higher precision
         val_gt_density = val_gt_density.to(device, non_blocking=True, dtype=torch.float)
         val_boxes = val_boxes.to(device, non_blocking=True, dtype=torch.float)
         neg_val_boxes = neg_val_boxes.to(device, non_blocking=True, dtype=torch.float)
@@ -319,7 +319,7 @@ def main(args):
                 
                 sub_val_cnt_err = torch.abs(sub_val_pred_cnt - sub_val_gt_cnt)
 
-                # 逐项添加并检查
+                # Accumulate per-item and guard against NaN/Inf
                 if not torch.isinf(sub_val_cnt_err) and not torch.isnan(sub_val_cnt_err):
                     batch_mae = sub_val_cnt_err.item()
                     batch_mse = sub_val_cnt_err.item() ** 2

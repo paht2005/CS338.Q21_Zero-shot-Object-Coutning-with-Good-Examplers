@@ -184,12 +184,12 @@ def detect_with_grounding_dino(
 
     start_time = time.time()
 
-    # Xử lý số ít (SINGULARIZATION)
+    # Singularization
     singular_name = p.singular_noun(text_prompt)
     if not singular_name:
         singular_name = text_prompt
 
-    # Lấy prompt
+    # Build prompt
     # caption = f"multiple single {singular_name} ."
     caption = f" {singular_name} ."
     print("Using caption for GroundingDINO:", caption)
@@ -480,12 +480,12 @@ def preprocess_image(image):
 
 
 def extract_exemplar_crops(image, boxes, crop_size=64):
-    """
-    Extract and preprocess exemplar crops THEO ĐÚNG LOGIC NOTEBOOK:
-    1. Crop box từ ảnh 384x384
-    2. Resize về 64x64 (FINAL SIZE - model expects 64x64)
-    
-    Model forward_decoder expects boxes shape: [N, shot_num, 3, 64, 64]
+    """Extract and preprocess exemplar crops following the notebook's logic:
+
+    1. Crop the box from the 384x384 image.
+    2. Resize to 64x64 (the final size expected by the model).
+
+    Model `forward_decoder` expects boxes with shape ``[N, shot_num, 3, 64, 64]``.
     """
     if len(boxes) == 0:
         return torch.zeros(1, 3, crop_size, crop_size)
@@ -500,10 +500,10 @@ def extract_exemplar_crops(image, boxes, crop_size=64):
         x2, y2 = min(image.width, x2), min(image.height, y2)
 
         if x2 > x1 and y2 > y1:
-            # Step 1: Crop từ ảnh gốc
+            # Step 1: Crop from the source image
             crop = image.crop((x1, y1, x2, y2))
             
-            # Step 2: Resize về 64x64 (FINAL - theo notebook và model requirement)
+            # Step 2: Resize to 64x64 (final size expected by the model)
             crop_64 = crop.resize((64, 64), Image.LANCZOS)
             
             # Convert to tensor (NO normalization)
@@ -523,25 +523,24 @@ def run_counting_inference(
     device="cuda",
     shot_num=3,
 ):
-    """
-    Run VA-Count model inference THEO ĐÚNG LOGIC NOTEBOOK
-    
+    """Run VA-Count model inference following the notebook's logic.
+
     Args:
-        model: VA-Count model
-        image: Input PIL Image
-        pos_boxes: Positive exemplar boxes (N, 4) [x1, y1, x2, y2]
-        device: cuda or cpu
-        shot_num: Number of exemplars (typically 3)
+        model: VA-Count model.
+        image: Input PIL Image.
+        pos_boxes: Positive exemplar boxes (N, 4) ``[x1, y1, x2, y2]``.
+        device: ``cuda`` or ``cpu``.
+        shot_num: Number of exemplars (typically 3).
 
     Returns:
-        density_map_np: Final density map (numpy)
-        count: Final count
-        processed_image: Preprocessed image
+        density_map_np: Final density map (numpy array).
+        count: Final estimated count.
+        processed_image: Preprocessed image.
     """
-    # Preprocess image - resize về 384x384
+    # Preprocess image - resize to 384x384
     processed_image = image.resize((384, 384), Image.LANCZOS)
 
-    # Convert to tensor (KHÔNG normalize - theo notebook)
+    # Convert to tensor WITHOUT normalization (matching the notebook)
     to_tensor = transforms.ToTensor()
     image_tensor = to_tensor(processed_image).unsqueeze(0).to(device)
 
@@ -571,7 +570,7 @@ def run_counting_inference(
             density_map = model(image_tensor, pos_exemplar_crops, shot_num)
 
     # ========================================
-    # FINAL COUNT - Chia cho 60 như notebook
+    # FINAL COUNT - divide by 60 (matching the notebook)
     # ========================================
     count = torch.abs(density_map.sum()).item() / 60.0
     count = max(0, count)

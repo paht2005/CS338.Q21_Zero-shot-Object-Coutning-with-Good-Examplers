@@ -1,0 +1,26 @@
+# Legacy pin file: use this ONLY when reproducing the report numbers on a
+# CUDA 11.6 box. Matches the wandb runs archived under
+# experiments/exp{2,3,4,5}/wandb/.
+--extra-index-url https://download.pytorch.org/whl/cu116
+
+torch==1.13.1+cu116
+torchvision==0.14.1+cu116
+timm==0.4.9
+numpy==1.23.4
+scipy==1.10.1
+imgaug==0.4.0
+pillow==9.3.0
+matplotlib==3.6.3
+pandas==1.5.2
+six==1.16.0
+scikit-learn==1.2.2
+transformers==4.30.2
+wandb
+tqdm
+google-generativeai>=0.3.0
+python-dotenv>=1.0.0
+inflect>=6.0.0
+streamlit
+opencv-python
+clip @ git+https://github.com/openai/CLIP.git
+ultralytics

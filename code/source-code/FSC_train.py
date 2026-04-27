@@ -143,8 +143,8 @@ class TrainData(Dataset):
         bboxes = anno['box_examples_coordinates']
         dots = np.array(anno['points'])
 
-        # 加载负样本的框
-        neg_anno = self.neg_annotations[im_id]  # 假设每个图像ID在负样本注释中都有对应的条目
+        # Load the bounding boxes for negative exemplars
+        neg_anno = self.neg_annotations[im_id]  # Assumes every image id has a matching entry in the negative annotations
         neg_bboxes = neg_anno['box_examples_coordinates']
 
         rects = list()
@@ -312,7 +312,7 @@ def main(args):
                 pos_boxes = pos_boxes.to(device, non_blocking=True, dtype=torch.half)
                 neg_boxes = neg_boxes.to(device, non_blocking=True, dtype=torch.half)
 
-    # 如果至少有一个图像在批处理中使用了Type 2 Mosaic，则禁止0-shot。
+    # If at least one image in the batch uses Type-2 Mosaic, disable 0-shot.
                 flag = 0
                 for i in range(m_flag.shape[0]):
                     flag += m_flag[i].item()
@@ -322,19 +322,19 @@ def main(args):
                     shot_num = random.randint(1, 5)
 
                 with torch.cuda.amp.autocast():
-                    pos_output = model(samples, pos_boxes, shot_num)  # 正样本输出
+                    pos_output = model(samples, pos_boxes, shot_num)  # Positive density prediction
 
-    # 计算正样本损失
+    # Positive-sample loss
                 mask = np.random.binomial(n=1, p=0.8, size=[384, 384])
                 masks = np.tile(mask, (pos_output.shape[0], 1))
                 masks = masks.reshape(pos_output.shape[0], 384, 384)
                 masks = torch.from_numpy(masks).to(device)
                 pos_loss = ((pos_output - gt_density) ** 2)
                 pos_loss = (pos_loss * masks / (384 * 384)).sum() / pos_output.shape[0]
-    # 负样本输出
+    # Negative density prediction
 
                 with torch.cuda.amp.autocast():
-                    neg_output = model(samples, neg_boxes, 1)  # 负样本输出
+                    neg_output = model(samples, neg_boxes, 1)  # Negative density prediction
                 
                 cnt1 = 1-torch.exp(-(torch.abs(pos_output.sum()/60 - gt_density.sum()/60).mean()))
                 if neg_output.shape[0] == 0:
@@ -344,7 +344,7 @@ def main(args):
                     cnt2 = 1-torch.exp(-(torch.abs((neg_output.sum() / (neg_output.shape[0]*60)) - 1).mean()))
                 cnt = cnt1+cnt2
 
-    # 计算正样本损失
+    # Negative-sample loss
                 mask = np.random.binomial(n=1, p=0.8, size=[384, 384])
                 masks = np.tile(mask, (neg_output.shape[0], 1))
                 masks = masks.reshape(neg_output.shape[0], 384, 384)
@@ -359,7 +359,7 @@ def main(args):
                 total_loss = contrastive_loss+pos_loss
 
 
-    # 更新 MAE 和 RMSE
+    # Update MAE and RMSE
                 with torch.no_grad():
                     pred_cnt = (pos_output.view(len(samples), -1)).sum(1) / 60
                     gt_cnt = (gt_density.view(len(samples), -1)).sum(1) / 60

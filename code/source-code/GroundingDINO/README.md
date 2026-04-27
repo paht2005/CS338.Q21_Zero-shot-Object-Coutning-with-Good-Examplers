@@ -1,7 +1,7 @@
 <div align="center">
   <img src="./.asset/grounding_dino_logo.png" width="30%">
 </div>
-# pip install groundingdino-py nếu bị lỗi C
+<!-- Tip: if compilation fails (e.g. `_C` not built), fall back to `pip install groundingdino-py`. -->
 # :sauropod: Grounding DINO 
 
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/grounding-dino-marrying-dino-with-grounded/zero-shot-object-detection-on-mscoco)](https://paperswithcode.com/sota/zero-shot-object-detection-on-mscoco?p=grounding-dino-marrying-dino-with-grounded) [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/grounding-dino-marrying-dino-with-grounded/zero-shot-object-detection-on-odinw)](https://paperswithcode.com/sota/zero-shot-object-detection-on-odinw?p=grounding-dino-marrying-dino-with-grounded) \

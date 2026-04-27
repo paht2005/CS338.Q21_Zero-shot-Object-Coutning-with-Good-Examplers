@@ -11,24 +11,24 @@ import torch.nn as nn
 import torch.nn.functional as F
 import clip
 
-# 定义全局变量
+# Global variables
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# 阈值设置
+# Threshold configuration
 BOX_THRESHOLD = 0.02
 TEXT_THRESHOLD = 0.02
 BOX_THRESHOLD_class = 0.01
 TEXT_THRESHOLD_class = 0.01
 
-# 初始化inflect引擎
+# Initialize the inflect engine
 p = inflect.engine()
 
-# 将单词转换为单数形式的函数
+# Helper to convert a word to its singular form
 def to_singular(word):
     singular_word = p.singular_noun(word)
     return singular_word if singular_word else word
 
-# 定义ClipClassifier类
+# Binary classifier built on top of CLIP
 class ClipClassifier(nn.Module):
     def __init__(self, clip_model, embed_dim=512):
         super(ClipClassifier, self).__init__()
@@ -36,7 +36,7 @@ class ClipClassifier(nn.Module):
         for param in self.clip_model.parameters():
             param.requires_grad = False
         self.fc = nn.Linear(clip_model.visual.output_dim, embed_dim)
-        self.classifier = nn.Linear(embed_dim, 2)  # 二分类
+        self.classifier = nn.Linear(embed_dim, 2)  # Binary classification head
 
     def forward(self, images):
         with torch.no_grad():
@@ -46,18 +46,18 @@ class ClipClassifier(nn.Module):
         logits = self.classifier(x)
         return logits
 
-# 初始化和加载二分类模型
+# Initialize and load the binary classifier
 clip_model, preprocess = clip.load("ViT-B/32", device)
 binary_classifier = ClipClassifier(clip_model).to(device)
 
-# 加载保存的权重
+# Load saved weights
 model_weights_path = './data/out/classify/best_model.pth'
 binary_classifier.load_state_dict(torch.load(model_weights_path, map_location=device))
 
-# 确认模型已经被设置为评估模式
+# Make sure the model is in evaluation mode
 binary_classifier.eval()
 
-# 计算两个边界框的IoU
+# IoU between two bounding boxes (xywh format)
 def calculate_iou(box1, box2):
     x1, y1, w1, h1 = box1
     x2, y2, w2, h2 = box2
@@ -75,7 +75,7 @@ def calculate_iou(box1, box2):
 
     return iou
 
-# 检查patch是否有效
+# Validity check for a candidate patch
 def is_valid_patch(patch, binary_classifier, preprocess, device):
     if patch.size[0] <= 0 or patch.size[1] <= 0:
         return False
@@ -87,24 +87,24 @@ def is_valid_patch(patch, binary_classifier, preprocess, device):
         prob_label_1 = probabilities[0, 1]
     return prob_label_1.item() > 0.8
 
-# 处理图片的主函数
+# Main image processing function
 def process_images(text_file_path, dataset_path, negative_file_path, model, preprocess, binary_classifier, output_folder, device='cpu'):
     boxes_dict = {}
     
-    # 读取negative classes文件并进行deduplication
+    # Read the negative-classes file and deduplicate entries
     negative_classes = set()
     with open(negative_file_path, 'r', encoding='utf-8') as f:
         for line in f:
             parts = line.strip().split('\t')
             if len(parts) >= 2:
-                # 分割negative classes并添加到集合中
+                # Split per-image negative classes and add to the global set
                 classes = parts[1].split(' . ')
                 for cls in classes:
                     cls = cls.strip()
                     if cls:
                         negative_classes.add(cls)
     
-    # 获取top 5 negative classes（按字母顺序排序后取前5）
+    # Take the top-5 negative classes (alphabetical order) as the global object prompt
     top_5_negative = sorted(list(negative_classes))[:5]
     object_prompt = ' . '.join(top_5_negative) + ' .'
     print(f"Using top 5 negative classes as object prompt: {object_prompt}")
@@ -167,11 +167,11 @@ def process_images(text_file_path, dataset_path, negative_file_path, model, prep
     return boxes_dict
 
 def main(args):
-    # 设置固定的默认路径
+    # Default model paths
     model_config = "GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py"
     model_weights = "GroundingDINO/weights/groundingdino_swint_ogc.pth"
     
-    # 根据root_path设置路径
+    # Build per-dataset paths from root_path
     text_file_path = os.path.join(args.root_path, "ImageClasses_FSC147.txt")
     dataset_path = os.path.join(args.root_path, "images_384_VarV2")
     negative_file_path = os.path.join(args.root_path, "ImageClasses_FSC147_detailed_v6_negative.txt")
@@ -181,13 +181,13 @@ def main(args):
     
     os.makedirs(output_folder, exist_ok=True)
 
-    # 加载GroundingDINO模型
+    # Load GroundingDINO model
     model = load_model(model_config, model_weights, device=device)
 
-    # 处理图片并生成边界框
+    # Process images and produce candidate negative bounding boxes
     boxes_dict = process_images(text_file_path, dataset_path, negative_file_path, model, preprocess, binary_classifier, output_folder, device=device)
 
-    # 更新JSON文件
+    # Update the annotation JSON file in place
     with open(input_json_path, 'r') as f:
         data = json.load(f)
 
