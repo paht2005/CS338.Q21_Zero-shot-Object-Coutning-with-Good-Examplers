@@ -1,0 +1,18 @@
+# Testing config — VA-Count Baseline evaluation
+# Usage: python FSC_test.py --config ../../configs/test_baseline.yaml
+
+model:
+  name: mae_vit_base_patch16
+  input_size: 384
+
+data:
+  anno_file: data/FSC147/annotation_FSC147_384.json
+  data_split_file: data/FSC147/Train_Test_Val_FSC_147.json
+  im_dir: data/FSC147/images_384_VarV2
+  gt_dir: data/FSC147/gt_density_map_adaptive_384_VarV2
+  class_file: data/FSC147/ImageClasses_FSC147.txt
+
+evaluation:
+  split: test
+  checkpoint: data/checkpoint_FSC.pth
+  output_dir: output/test_baseline

@@ -328,7 +328,7 @@ We are very grateful for these excellent works!
 ## Contact
 
 For questions about this CS338.Q21 project, please contact the team leader
-**Nguyễn Công Phát — `23521143@gm.uit.edu.vn`**. For questions about the
+**Nguyen Cong Phat — `23521143@gm.uit.edu.vn`**. For questions about the
 original VA-Count paper, please refer to the upstream authors.
 
 ## License

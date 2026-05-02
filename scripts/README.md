@@ -1,18 +1,33 @@
 # `scripts/`
 
-Reserved for **shell / Python helper scripts** that wrap common workflows
-(dataset download, full evaluation sweeps, log post-processing). The
-CS338.Q21 iteration kept all execution at the Python module level under
-`code/source-code/`, so this folder is currently empty.
+Shell helper scripts that wrap common workflows for reproducibility.
 
-Suggested layout if scripts are added in a future iteration:
+## Available Scripts
 
+| Script | Description |
+|--------|-------------|
+| `setup_env.sh` | Create conda env and install all dependencies |
+| `download_data.sh` | Instructions for downloading FSC147 dataset & checkpoints |
+| `run_evaluation.sh` | Run FSC_test.py for all model variants |
+| `generate_exemplars.sh` | Generate exemplars with GroundingDINO and/or YOLO-World |
+
+## Usage
+
+```bash
+# First-time setup
+bash scripts/setup_env.sh
+
+# Run full evaluation
+bash scripts/run_evaluation.sh
+
+# Generate exemplars (options: dino, yolo, all)
+bash scripts/generate_exemplars.sh all
 ```
-scripts/
-├── prepare_fsc147.sh        # Download + unzip FSC-147 into code/source-code/data/
-├── run_full_eval.sh         # Run FSC_test.py for all four configurations
-└── extract_wandb_metrics.py # Build RESULTS.md tables straight from wandb summaries
-```
 
-Anything that produces numbers cited in the report should be reproducible
-from a single command in this folder.
+Or use the Makefile from the repo root:
+
+```bash
+make help    # See all available commands
+make eval    # Run evaluation
+make demo    # Launch Streamlit demo
+```

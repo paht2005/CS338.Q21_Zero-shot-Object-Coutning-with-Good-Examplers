@@ -1,0 +1,26 @@
+# Training config — VA-Count Baseline (GroundingDINO exemplars)
+# Usage: python FSC_train.py --config ../../configs/train_baseline.yaml
+
+model:
+  name: mae_vit_base_patch16
+  input_size: 384
+  norm_pix_loss: true
+
+data:
+  anno_file: data/FSC147/annotation_FSC147_384.json
+  data_split_file: data/FSC147/Train_Test_Val_FSC_147.json
+  im_dir: data/FSC147/images_384_VarV2
+  gt_dir: data/FSC147/gt_density_map_adaptive_384_VarV2
+  class_file: data/FSC147/ImageClasses_FSC147.txt
+
+training:
+  epochs: 200
+  batch_size: 8
+  lr: 1.0e-4
+  weight_decay: 0.05
+  warmup_epochs: 10
+  accum_iter: 1
+
+checkpoint:
+  resume: data/checkpoint_FSC.pth
+  output_dir: output/baseline
