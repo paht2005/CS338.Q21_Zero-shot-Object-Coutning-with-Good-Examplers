@@ -95,60 +95,87 @@ Per-member responsibilities and the agreed contribution split are tracked in
 ## **Repository Structure**
 
 ```text
-ZeroShot-Object-Counting-with-Good-Examplers/
-├── README.md                # Main project documentation (this file)
+cs338-zero-shot-object-counting-with-good-examplers/
+├── README.md                 # Main project documentation (this file)
+├── Makefile                  # Top-level build/run shortcuts (make help)
+├── LICENSE                   # MIT License
+├── requirements.txt          # Root-level Python dependencies
+├── env.template              # Environment variable template (.env)
 │
-├── docs/                    # Course reports and documents (PDF, slides, LaTeX, etc.)
-│
-├── images/                  # Images for GitHub (thumbnails, screenshots, GIF demos)
-│   └── Thumbnail.png        # Main project thumbnail
-│
-├── code/                    # Main implementation (training, inference, demos)
+├── code/                     # Main implementation
 │   ├── README.md
-│   └── source-code/
-│       ├── README.md        # Detailed instructions (env, data, checkpoints)
-│       ├── data/            # FSC147 structure (images, density maps, annotations)
-│       ├── GroundingDINO/   # GroundingDINO code + weights
-│       ├── util/            # Dataset loader, misc utilities
-│       ├── models_*.py      # MAE / CrossViT model definitions
-│       ├── FSC_pretrain.py  # Pretraining script
-│       ├── FSC_train.py     # Training / fine-tuning script
-│       ├── FSC_test.py      # Evaluation script (MAE, RMSE, etc.)
-│       ├── prompt_enhancer.py
-│       ├── grounding_*.py   # GroundingDINO-based exemplar extraction
-│       ├── yolo_*.py        # YOLO-World–based exemplar extraction
-│       ├── demo_*.py        # Demo & visualization scripts
-│       └── requirements.txt # Python dependencies
+│   └── source-code/          # VA-Count + Rich Prompt + YOLO-World
+│       ├── README.md
+│       ├── data/              # FSC147 dataset (images, density maps, annotations)
+│       ├── GroundingDINO/     # GroundingDINO code + weights
+│       ├── util/              # Dataset loader, misc utilities
+│       ├── models_*.py        # MAE / CrossViT model definitions
+│       ├── FSC_pretrain.py    # Pretraining script
+│       ├── FSC_train.py       # Training / fine-tuning script
+│       ├── FSC_test.py        # Evaluation script (MAE, RMSE)
+│       ├── prompt_enhancer.py # Gemini-based Rich Prompt generation
+│       ├── grounding_*.py     # GroundingDINO-based exemplar extraction
+│       ├── yolo_*.py          # YOLO-World–based exemplar extraction
+│       ├── demo_*.py          # Streamlit demo & visualization scripts
+│       └── requirements.txt   # Python dependencies
 │
-└── experiments/             # Archived experiment runs and logs
-    ├── README.md
-    ├── exp2/
-    ├── exp3/
-    ├── exp4/
-    └── exp5/
+├── configs/                   # YAML run configurations for training & evaluation
+│   ├── README.md
+│   ├── train_baseline.yaml
+│   ├── train_finetune_dino_prompt.yaml
+│   ├── train_finetune_yolo.yaml
+│   └── test_baseline.yaml
+│
+├── scripts/                   # Shell helpers for reproducibility
+│   ├── README.md
+│   ├── setup_env.sh           # Conda env creation + dependency install
+│   ├── download_data.sh       # FSC147 dataset & checkpoint download
+│   ├── generate_exemplars.sh  # Exemplar generation (GroundingDINO / YOLO)
+│   └── run_evaluation.sh      # Full evaluation suite
+│
+├── experiments/               # Archived experiment runs and wandb logs
+│   ├── README.md
+│   ├── exp2/                  # VA-Count baseline runs
+│   ├── exp3/                  # YOLO-World ablations
+│   ├── exp4/                  # Mixed VA-Count / Rich Prompt / YOLO runs
+│   └── exp5/                  # Additional Rich Prompt / YOLO ablations
+│
+├── docs/                      # Reports, slides, and references
+│   ├── README.md
+│   ├── CONTRIBUTIONS.md       # Per-member contribution split
+│   ├── RESULTS.md             # Numerical results & provenance
+│   ├── report/                # LaTeX report → Report.pdf
+│   ├── cs338-slide/           # LaTeX presentation slides
+│   └── references/            # Reference materials
+│
+├── images/                    # Images for GitHub (thumbnails, screenshots)
+│   └── thumbnail.png
+│
+└── draft/                     # Early development drafts (historical)
+    └── ...                    # Original upstream code before restructuring
 ```
 
 - **`code/`** – Everything needed to **run the models**:
-  - Baseline VA-Count (GroundingDINO + MAE + NSM)
-  - Rich Prompt pipeline
-  - YOLO-World based exemplar extraction
-  - Demo applications and visualization scripts  
-  See `code/README.md` and `code/source-code/README.md` for details.
+  baseline VA-Count, Rich Prompt pipeline, YOLO-World exemplar extraction,
+  demo applications and visualization scripts.
+  See [`code/README.md`](code/README.md) and [`code/source-code/README.md`](code/source-code/README.md).
 
-- **`experiments/`** – Data snapshots, GroundingDINO installs, YOLO-World weights,
-  visualizations and `wandb` logs for different experimental setups that correspond to
-  the ablations and results reported in `Report.pdf`.  
-  See `experiments/README.md` and `experiments/exp*/README.md` for per-run notes.
+- **`configs/`** – YAML configuration files consumed by training and evaluation scripts.
+  See [`configs/README.md`](configs/README.md).
 
-- **`docs/`** – Course-related documents:
-  - Final project report (PDF)
-  - Presentation slides
-  - LaTeX sources or any other classroom submission material.
+- **`scripts/`** – Shell scripts wrapping common workflows (setup, download, exemplar
+  generation, evaluation). See [`scripts/README.md`](scripts/README.md).
 
-- **`images/`** – Assets for the GitHub repository:
-  - Thumbnails
-  - Screenshots
-  - Animated GIFs demonstrating live demos.
+- **`experiments/`** – Archived `wandb` runs, visualizations, and data snapshots supporting
+  the numbers in `Report.pdf`. See [`experiments/README.md`](experiments/README.md).
+
+- **`docs/`** – Course reports, presentation slides, contribution records, and references.
+  See [`docs/README.md`](docs/README.md).
+
+- **`images/`** – Assets for the GitHub repository (thumbnails, screenshots).
+
+- **`draft/`** – Early development drafts and original upstream code before project
+  restructuring. Kept for historical reference.
 
 ---
 
@@ -355,44 +382,56 @@ cd CS338.Q21_Zero-shot-Object-Coutning-with-Good-Examplers
 2. **Create and activate a virtual environment (recommended)**
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate        # Linux/macOS
-# .venv\Scripts\activate         # Windows
+python -m venv env
+source env/bin/activate          # Linux/macOS
+# env\Scripts\activate           # Windows
 ```
 
-3. **Install Python dependencies**
+> The `env/` directory is already listed in `.gitignore` and will not be
+> committed to the repository.
+
+3. **Configure environment variables**
 
 ```bash
-cd code/source-code
+cp env.template .env
+# Edit .env and fill in your API keys (GEMINI_API_KEY, etc.)
+```
+
+> The `.env` file is gitignored and must **never** be committed.
+> See [`env.template`](env.template) for all available variables.
+
+4. **Install Python dependencies**
+
+```bash
 pip install -r requirements.txt
 ```
 
-> The default `requirements.txt` targets modern PyTorch (`torch>=2.0`) and
+> The root `requirements.txt` targets modern PyTorch (`torch>=2.0`) and
 > works on macOS (CPU / MPS), Linux CPU, and CUDA >= 11.7. To reproduce the
 > exact MAE / RMSE / latency numbers reported in `docs/report/Report.pdf`
-> on a CUDA 11.6 box, install `requirements-cuda116.txt` instead:
+> on a CUDA 11.6 box, install the pinned CUDA 11.6 variant instead:
 >
 > ```bash
-> pip install -r requirements-cuda116.txt
+> pip install -r code/source-code/requirements-cuda116.txt
 > ```
 
-4. **Install GroundingDINO (editable)**
+5. **Install GroundingDINO (editable)**
 
 ```bash
-cd GroundingDINO
+cd code/source-code/GroundingDINO
 pip install -e .
-cd ..
+cd ../../..
 ```
 
-5. **Prepare the FSC147 dataset**
+6. **Prepare the FSC147 dataset**
 
 Follow the **Dataset Preparation** section in `code/source-code/README.md`:
 
 - Download FSC147 from the official repository.
-- Place it under `data/FSC147/`.
+- Place it under `code/source-code/data/FSC147/`.
 - Run the split-generation script to create `train.txt`, `val.txt`, `test.txt`.
 
-6. **Download pretrained checkpoints**
+7. **Download pretrained checkpoints**
 
 Also described in `code/source-code/README.md`:
 
@@ -470,7 +509,7 @@ exemplar-generation scripts.
 
 The interactive demo is a **Streamlit** app at
 `code/source-code/demo_app_advanced.py`. Configure your Gemini API key first
-(see `.env.example`), then run:
+(copy `env.template` to `.env` and fill in `GEMINI_API_KEY`), then run:
 
 ```bash
 cd code/source-code

@@ -90,6 +90,7 @@ docs/report/_minted-*/
 docs/report/*.nav
 docs/report/*.snm
 docs/report/*.vrb
+docs/references/
 
 # Drafts amd misc notes (never tracked)
 draft/
