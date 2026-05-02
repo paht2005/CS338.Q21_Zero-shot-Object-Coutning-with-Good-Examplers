@@ -2,7 +2,7 @@
 
 This file is the high-level numerical summary of the project. The exact tables,
 charts and analysis live in [`docs/report/Report.pdf`](report/Report.pdf)
-(Chapter 3 — *Thực nghiệm*). All numbers below come from the team's own
+(Chapter 3 — *Experiments*). All numbers below come from the team’s own
 training and evaluation runs archived under `experiments/exp{2,3,4,5}/wandb/`
 and were cross-checked against the surviving `wandb-summary.json` files when
 writing the report.

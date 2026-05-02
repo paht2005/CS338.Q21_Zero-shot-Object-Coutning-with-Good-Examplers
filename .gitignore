@@ -52,6 +52,10 @@ experiments/**/yolo*.pt
 # Very large experiment notebooks (visualization only)
 experiments/**/notebook/*.ipynb
 
+# Large visualization notebooks with embedded images (>100MB)
+code/source-code/notebooks/visualize_vacount_results.ipynb
+code/source-code/notebooks/visualize_density_and_PosNeg.ipynb
+
 # Temporary / uploads
 uploads/
 *.tmp
@@ -86,4 +90,7 @@ docs/report/_minted-*/
 docs/report/*.nav
 docs/report/*.snm
 docs/report/*.vrb
+
+# Drafts amd misc notes (never tracked)
+draft/
 

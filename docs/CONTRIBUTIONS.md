@@ -2,24 +2,24 @@
 
 This file lists the per-member contributions for the CS338.Q21 (Pattern
 Recognition, UIT) project *“Zero-shot Object Counting with Good Exemplars”*.
-The same breakdown also appears as Bảng `tab:phan_cong` in
-[`docs/report/Report.pdf`](report/Report.pdf) (THÔNG TIN THÀNH VIÊN).
+The same breakdown also appears as Table `tab:phan_cong` in
+[`docs/report/Report.pdf`](report/Report.pdf) (TEAM MEMBER INFORMATION).
 
 ## Team
 
 | No. | Student ID | Full Name        | Role        | GitHub                                               | Email                       |
 |----:|:----------:|------------------|-------------|------------------------------------------------------|-----------------------------|
-| 1   | 23521143   | Nguyễn Công Phát | Leader      | [paht2005](https://github.com/paht2005)              | 23521143@gm.uit.edu.vn      |
-| 2   | 23520158   | Mai Thái Bình    | Member      | [maibinhkznk209](https://github.com/maibinhkznk209/) | 23520158@gm.uit.edu.vn      |
-| 3   | 23520213   | Vũ Việt Cường    | Member      | [Kun05-AI](https://github.com/Kun05-AI)              | 23520213@gm.uit.edu.vn      |
+| 1   | 23521143   | Nguyen Cong Phat | Leader      | [paht2005](https://github.com/paht2005)              | 23521143@gm.uit.edu.vn      |
+| 2   | 23520158   | Mai Thai Binh    | Member      | [maibinhkznk209](https://github.com/maibinhkznk209/) | 23520158@gm.uit.edu.vn      |
+| 3   | 23520213   | Vu Viet Cuong    | Member      | [Kun05-AI](https://github.com/Kun05-AI)              | 23520213@gm.uit.edu.vn      |
 
 ## Contribution split
 
 | Member             | Share | Primary deliverables                                                                                                                                                                                                                                                                                                                          |
 |--------------------|------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Nguyễn Công Phát** (Leader) | 35%   | Repository structure (`docs/`, `configs/`, `scripts/`); training pipeline integration (`FSC_train.py`, `FSC_test.py`); secrets handling for the Gemini API key (`GEMINI_API_KEY` via `.env`); wrote Chapter 1 (Tổng quan) and Chapter 2 (Phương pháp) of `Report.pdf`; managed Git history and reviews. |
-| **Mai Thái Bình**             | 35%   | Implemented the **Rich Prompt module** (Gemini 2.0 Flash) and the `grounding_pos.py` / `grounding_neg.py` pipelines; ran the MAE / RMSE evaluation sweeps and built the speed-vs-accuracy chart; reconciled the values against the project's `wandb` runs under `experiments/exp{2,3,4,5}/wandb/`; wrote Chapter 3 §3.4 (kết quả Rich Prompt) and the failure-analysis sub-section. |
-| **Vũ Việt Cường**             | 30%   | Implemented the **YOLO-World extension** (`yolo_pos_withPrompt.py`, `yolo_pos_withoutPrompt.py`, `yolo_neg.py`); end-to-end testing and documentation of the Streamlit demo (`demo_app_advanced.py` + supporting modules `demo_inference.py`, `demo_pipeline_advanced.py`, `demo_visualization.py`); wrote Chapter 3 §3.5 (YOLO-World), Chapter 4 (Demo) and Chapter 5 (Kết luận) of `Report.pdf`; produced the presentation slides. |
+| **Nguyen Cong Phat** (Leader) | 35%   | Repository structure (`docs/`, `configs/`, `scripts/`); training pipeline integration (`FSC_train.py`, `FSC_test.py`); secrets handling for the Gemini API key (`GEMINI_API_KEY` via `.env`); wrote Chapter 1 (Overview) and Chapter 2 (Methods) of `Report.pdf`; managed Git history and reviews. |
+| **Mai Thai Binh**             | 35%   | Implemented the **Rich Prompt module** (Gemini 2.0 Flash) and the `grounding_pos.py` / `grounding_neg.py` pipelines; ran the MAE / RMSE evaluation sweeps and built the speed-vs-accuracy chart; reconciled the values against the project's `wandb` runs under `experiments/exp{2,3,4,5}/wandb/`; wrote Chapter 3 §3.4 (Rich Prompt results) and the failure-analysis sub-section. |
+| **Vu Viet Cuong**             | 30%   | Implemented the **YOLO-World extension** (`yolo_pos_withPrompt.py`, `yolo_pos_withoutPrompt.py`, `yolo_neg.py`); end-to-end testing and documentation of the Streamlit demo (`demo_app_advanced.py` + supporting modules `demo_inference.py`, `demo_pipeline_advanced.py`, `demo_visualization.py`); wrote Chapter 3 §3.5 (YOLO-World), Chapter 4 (Demo) and Chapter 5 (Conclusion) of `Report.pdf`; produced the presentation slides. |
 | **Total**                     | **100%** |                                                                                                                                                                                                                                                                                                                                            |
 
 The split reflects the realised work between Nov 2025 and Apr 2026 and was
@@ -54,8 +54,8 @@ exemplar-extraction stage. The team's deliverables span:
   [YOLO-World](https://github.com/AILab-CVC/YOLO-World),
   [CounTR](https://github.com/Verg-Avesta/CounTR), and
   [MAE](https://github.com/facebookresearch/mae).
-- **Course supervisor**: TS. Dương Việt Hằng (Khoa Khoa học Máy tính, UIT) —
-  chân thành cảm ơn cô đã hướng dẫn và góp ý xuyên suốt môn CS338.Q21.
+- **Course supervisor**: TS. Duong Viet Hang (Faculty of Computer Science, UIT) —
+  we sincerely thank the instructor for her guidance and feedback throughout CS338.Q21.
 
 ## How contributions land in Git
 
