@@ -101,6 +101,8 @@ cs338-zero-shot-object-counting-with-good-examplers/
 ├── requirements.txt          # Root-level Python dependencies
 ├── env.template              # Environment variable template (.env)
 │
+├── demo/                     # demo section
+|
 ├── code/                     # Main implementation
 │   ├── README.md
 │   └── source-code/          # VA-Count + Rich Prompt + YOLO-World
