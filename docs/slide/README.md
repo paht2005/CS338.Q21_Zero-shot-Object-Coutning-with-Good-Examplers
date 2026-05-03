@@ -1,4 +1,4 @@
-# `docs/cs338-slide/`
+# `docs/slide/`
 
 LaTeX Beamer presentation slides for the CS338.Q21 in-class project defense.
 
