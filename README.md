@@ -55,8 +55,6 @@ YOLO-World weights) are hosted **outside Git** to keep the repository under GitH
 | 2   | 23520158   | Mai Thai Binh    | Member | [maibinhkznk209](https://github.com/maibinhkznk209/)     | 23520158@gm.uit.edu.vn |
 | 3   | 23520213   | Vu Viet Cuong    | Member | [Kun05-AI](https://github.com/Kun05-AI)                  | 23520213@gm.uit.edu.vn |
 
-Per-member responsibilities and the agreed contribution split are tracked in
-[`docs/CONTRIBUTIONS.md`](docs/CONTRIBUTIONS.md).
 
 > **About this project.** This repository is the team's own re-implementation
 > of the ECCV 2024 **VA-Count** paper, extended with two independent additions
