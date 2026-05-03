@@ -7,6 +7,7 @@
 <h1 align="center"><b>Zero-shot Object Counting with Good Exemplars</b></h1>
 <h3 align="center">Enhanced with Rich Prompts and YOLO-World</h3>
 <h4 align="center">CS338.Q21 – Pattern Recognition</h4>
+<h4 align="center">Instructor: PhD. Duong Viet Hang</h4>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.9+-blue?style=for-the-badge&logo=python&logoColor=white" />
