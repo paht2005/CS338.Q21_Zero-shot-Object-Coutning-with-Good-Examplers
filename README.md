@@ -40,7 +40,7 @@ YOLO-World weights) are hosted **outside Git** to keep the repository under GitH
 ignored by `.gitignore` and therefore not stored in this repository:
 
 > **Full project artifacts (OneDrive):**
-> https://nklod-my.sharepoint.com/:f:/g/personal/phatxinhchao_nklod_onmicrosoft_com/IgC7A_ShW5-4QrbObsbxxKPXAXWH044zAbHsUHiGBiaDTsk?e=AEX2jq
+> https://l.facebook.com/l.php?u=https%3A%2F%2Fnklod-my.sharepoint.com%2F%3Af%3A%2Fg%2Fpersonal%2Fphatxinhchao_nklod_onmicrosoft_com%2FIgC7A_ShW5-4QrbObsbxxKPXAXWH044zAbHsUHiGBiaDTsk%3Fe%3DhZ0Sqn%26fbclid%3DIwZXh0bgNhZW0CMTAAYnJpZBExRGhzTjdRSWVGS3FCYjFIVHNydGMGYXBwX2lkEDIyMjAzOTE3ODgyMDA4OTIAAR7tX3stW3WmiaLvVv1wsNY2y33U7gX-egMKVOtAAgxidFHQNMKe37mj-nelfw_aem_jKx70LbiNjbCGFpWvo60rQ&h=AUArnrT3eQIx6Y0qxqtttL6-gvuAkFVxt7stUZ6qlQLIPzFrEQGl4vO20wp_nz3w_eQ55d0uKO9bwOEGQLLLHthtumaA8lkNEJUdiFihwglKgWSPnp2qY_4g5g_wPT8
 >
 > This folder includes the full FSC147 dataset, checkpoints, raw `wandb` runs, and detector
 > weights referenced in [`docs/report/Report.pdf`](docs/report/Report.pdf) and omitted from Git.
