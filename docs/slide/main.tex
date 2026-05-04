@@ -4,13 +4,20 @@
 
 % --- Vietnamese ---
 \usepackage{fontspec}
-\setmainfont{TeX Gyre Termes}
+\setmainfont{texgyretermes}[
+    Extension      = .otf,
+    UprightFont    = *-regular,
+    BoldFont       = *-bold,
+    ItalicFont     = *-italic,
+    BoldItalicFont = *-bolditalic
+]
 \usepackage{polyglossia}
 \setdefaultlanguage{vietnamese}
 
 % --- Packages ---
 \usepackage{tikz}
 \usepackage{pgfplots}
+\usepackage{pgfplotstable}
 \pgfplotsset{compat=1.18}
 \usetikzlibrary{positioning}
 \setbeamerfont{caption}{size=\tiny}
@@ -69,7 +76,8 @@
 \date{GVHD: TS. Dương Việt Hằng}
    
 % --- Figure path ---
-\graphicspath{{figures/}}
+\graphicspath{{figures/}{../report/figures/}}
+
 
 % --- Footer ---
 \setbeamertemplate{footline}{
@@ -1013,9 +1021,6 @@ VA-Count + RP & 5,76 \\
     grid style={dashed,gray!40},
     legend pos=north east,
     legend style={font=\tiny, draw=gray!50},
-    nodes near coords,
-    every node near coord/.append style={font=\tiny, anchor=south west, xshift=2pt},
-    point meta=explicit symbolic,
     scatter/classes={
         a={mark=*,draw=blue!80,fill=blue!50,mark size=3pt},
         b={mark=square*,draw=red!80,fill=red!50,mark size=3pt},
@@ -1024,14 +1029,17 @@ VA-Count + RP & 5,76 \\
     },
 ]
 \addplot[scatter, only marks, scatter src=explicit symbolic]
-    table[x=latency, y=mae, meta=class] {
-        latency  mae    class  label
-        0.6006   19.03  a      {YOLO}
-        1.4710   17.99  b      {VA-Count}
-        2.4054   17.91  d      {YOLO+RP}
-        5.7578   17.80  c      {GDino+RP}
+    coordinates {
+        (0.6006, 19.03) [a]
+        (1.4710, 17.99) [b]
+        (2.4054, 17.91) [d]
+        (5.7578, 17.80) [c]
     };
 \legend{YOLO-World, VA-Count, YOLO+RP, GDino+RP}
+\node[font=\tiny, anchor=south west, xshift=2pt] at (axis cs:0.6006,19.03) {YOLO};
+\node[font=\tiny, anchor=south west, xshift=2pt] at (axis cs:1.4710,17.99) {VA-Count};
+\node[font=\tiny, anchor=south west, xshift=2pt] at (axis cs:2.4054,17.91) {YOLO+RP};
+\node[font=\tiny, anchor=south east, xshift=-2pt] at (axis cs:5.7578,17.80) {GDino+RP};
 \draw[->,thick,dashed,gray!60] (axis cs:3.0,19.5) -- (axis cs:0.8,17.5)
     node[pos=0.4,above,sloped,font=\tiny\itshape,text=gray]{tối ưu};
 \end{axis}
