@@ -151,7 +151,7 @@ cs338-zero-shot-object-counting-with-good-examplers/
 │   ├── CONTRIBUTIONS.md       # Per-member contribution split
 │   ├── RESULTS.md             # Numerical results & provenance
 │   ├── report/                # LaTeX report → Report.pdf
-│   ├── sslide/           # LaTeX presentation slides
+│   ├── slide/           # LaTeX presentation slides
 │   └── references/            # Reference materials
 │
 ├── images/                    # Images for GitHub (thumbnails, screenshots)
