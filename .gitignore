@@ -75,15 +75,22 @@ code/source-code/data/FSC147/
 experiments/**/data/FSC147/
 
 # LaTeX build artefacts (keep main.tex, references.bib, figures/, Report.pdf)
-docs/report/
-docs/slide
-docs/references/
-!docs/slide/README.md
-!docs/slide/*.pdf
-!docs/slide/*.tex
+docs/report/*
+docs/slide/*
+docs/references/*
+
 !docs/report/README.md
-!docs/report/*.pdf
-!docs/report/*.tex
+!docs/report/.pdf
+!docs/report/.tex
+!docs/report/references.bib
+!docs/report/figures/
+!docs/report/figures/**
+
+!docs/slide/README.md
+!docs/slide/.pdf
+!docs/slide/.tex
+
+
 
 
 # Drafts amd misc notes (never tracked)
