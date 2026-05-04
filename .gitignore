@@ -80,15 +80,15 @@ docs/slide/*
 docs/references/*
 
 !docs/report/README.md
-!docs/report/.pdf
-!docs/report/.tex
+!docs/report/*.pdf
+!docs/report/*.tex
 !docs/report/references.bib
 !docs/report/figures/
 !docs/report/figures/**
 
 !docs/slide/README.md
-!docs/slide/.pdf
-!docs/slide/.tex
+!docs/slide/*.pdf
+!docs/slide/*.tex
 
 
 
