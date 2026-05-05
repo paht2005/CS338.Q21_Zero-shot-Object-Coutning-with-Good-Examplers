@@ -5,7 +5,8 @@ __pycache__/
 *.pyd
 
 # Planning and project management files (e.g., from Notion, Trello, etc.)
-.planning/*
+.planning/
+.planning/**
 
 # Virtual environments
 .venv/
