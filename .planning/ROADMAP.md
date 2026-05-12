@@ -23,7 +23,7 @@
 
 **Requirements:** SRV-01, SRV-02, SRV-03, SRV-04
 
-**Plans:** TBD
+**Plans:** 0/2 plans executed
 
 ---
 
