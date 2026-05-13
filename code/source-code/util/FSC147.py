@@ -97,8 +97,6 @@ def get_args_parser():
                         help='class json file')
     return parser
 
-args = get_args_parser()
-args = args.parse_args()
 
 class ResizeSomeImage(object):
     def __init__(self, args):
