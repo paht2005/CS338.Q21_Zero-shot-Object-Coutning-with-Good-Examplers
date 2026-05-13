@@ -17,7 +17,7 @@
 
 ### Phase 1: Server Setup & Baseline Reproduction
 
-**Goal:** Establish a reproducible environment on `counting@192.168.6.200` and confirm the 4 existing pipeline configs reproduce their known val-split numbers.
+**Goal:** Establish a reproducible environment on `phatcnguyen@sandbox.netbird.cloud` and confirm the 4 existing pipeline configs reproduce their known val-split numbers.
 
 **Depends on:** Nothing
 

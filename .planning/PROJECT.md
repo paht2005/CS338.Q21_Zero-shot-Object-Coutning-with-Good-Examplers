@@ -16,11 +16,11 @@ Validate the scalability claim of Rich Prompts across detectors **and** have a p
 - ✓ YOLO-World drop-in detector implemented — existing
 - ✓ GroundingDINO baseline implemented — existing
 - ✓ NSM pretrained checkpoint available — existing
-- ✓ FSC-147 dataset available at `/mnt/mmlab2024nas/counting` — existing (server)
+- ✓ FSC-147 dataset available at `code/source-code/data/FSC147/` on sandbox — existing (to be uploaded)
 
 ### Active
 
-- [ ] Run val-split evaluation of all 4 baseline configs on server (counting@192.168.6.200)
+- [ ] Run val-split evaluation of all 4 baseline configs on server (phatcnguyen@sandbox.netbird.cloud)
 - [ ] Identify 1–2 additional open-world detectors compatible with the EEM pipeline
 - [ ] Generate exemplars and run val-split evaluation for additional detectors (with and without Rich Prompts)
 - [ ] Compile results table showing Rich Prompts reduce MAE across all detectors
@@ -37,8 +37,8 @@ Validate the scalability claim of Rich Prompts across detectors **and** have a p
 ## Context
 
 - **Paper target**: MAPR 2026 (IEEE conference format, IEEEtran)
-- **Server**: `ssh counting@192.168.6.200` (pass: 1), has Docker + Conda
-- **Data location on server**: `/mnt/mmlab2024nas/counting` (not `/home/`)
+- **Server**: `ssh phatcnguyen@sandbox.netbird.cloud` (pass: 1), has CUDA 13.2 + Python 3.12 venv (Tesla T4)
+- **Data location on server**: `~/cs338-counting/code/source-code/data` (not `/home/`)
 - **GPU**: RTX 4060 on the lab workstation (existing experiments), server GPU TBD
 - **Existing results** (test split):
   - VA-Count baseline (GDino, raw): MAE 17.99, RMSE 129.39
@@ -50,7 +50,7 @@ Validate the scalability claim of Rich Prompts across detectors **and** have a p
 
 ## Constraints
 
-- **Hardware**: Must use `/mnt/mmlab2024nas/counting` for data on server, not `/home/`
+- **Hardware**: Must use `~/cs338-counting/code/source-code/data` for data on server, not `/home/`
 - **Compute**: Server environment: Docker or Conda (whichever is easiest to reproduce)
 - **Paper style**: IEEE conference (IEEEtran), keep abstract unchanged
 - **Detector compatibility**: New detectors must support text-prompt → bounding-box output to plug into existing EEM

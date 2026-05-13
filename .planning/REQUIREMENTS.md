@@ -7,8 +7,8 @@
 
 ### Server Setup
 
-- [ ] **SRV-01**: Server `counting@192.168.6.200` is accessible and environment is reproducible (Conda or Docker)
-- [ ] **SRV-02**: FSC-147 dataset is available under `/mnt/mmlab2024nas/counting` (not `/home/`)
+- [ ] **SRV-01**: Server `phatcnguyen@sandbox.netbird.cloud` is accessible and environment is reproducible (Python venv)
+- [ ] **SRV-02**: FSC-147 dataset is available under `code/source-code/data/FSC147/` (local, no NAS)
 - [ ] **SRV-03**: Pre-trained NSM checkpoint is available on the server
 - [ ] **SRV-04**: Existing 4 pipeline configs reproduce known val-split MAE/RMSE figures
 

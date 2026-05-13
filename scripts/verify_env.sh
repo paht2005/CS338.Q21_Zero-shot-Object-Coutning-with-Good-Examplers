@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Smoke-test the conda environment on the lab server after server_setup.sh.
-# Run from the repo root with the vacount conda env already activated.
-# Usage: conda activate vacount && bash scripts/verify_env.sh
+# Smoke-test the project environment on sandbox.netbird.cloud.
+# Run from the repo root with .venv activated.
+# Usage: source .venv/bin/activate && bash scripts/verify_env.sh
 # Exit code: 0 if ALL checks pass, 1 otherwise.
 
 set -uo pipefail
@@ -14,6 +14,7 @@ check_fail() { echo "  FAIL: $1"; FAIL=$((FAIL + 1)); }
 
 echo "=============================================="
 echo " VA-Count Environment Verification"
+echo " Server: sandbox.netbird.cloud"
 echo "=============================================="
 
 # --- 1. Python import checks ---
@@ -67,59 +68,58 @@ print(f'  CUDA device: {name}')
 " 2>/dev/null; then
     check_pass "CUDA available"
 else
-    check_fail "CUDA not available (check nvidia-smi and torch CUDA version)"
+    check_fail "CUDA not available"
 fi
 
-# --- 3. Data path checks ---
+# --- 3. Local data path checks ---
 echo ""
-echo "[3/5] NAS data path checks..."
-NAS_PATHS=(
-    "/mnt/mmlab2024nas/counting"
-    "/mnt/mmlab2024nas/counting/fsc147/images_384_VarV2"
-    "/mnt/mmlab2024nas/counting/fsc147/gt_density_map_adaptive_384_VarV2"
-    "/mnt/mmlab2024nas/counting/fsc147/Train_Test_Val_FSC_147.json"
+echo "[3/5] Local FSC-147 data path checks..."
+LOCAL_DATA="code/source-code/data/FSC147"
+DATA_PATHS=(
+    "${LOCAL_DATA}/images_384_VarV2"
+    "${LOCAL_DATA}/gt_density_map_adaptive_384_VarV2"
+    "${LOCAL_DATA}/Train_Test_Val_FSC_147.json"
+    "${LOCAL_DATA}/annotation_FSC147_384.json"
 )
-for path in "${NAS_PATHS[@]}"; do
-    if [ -e "$path" ]; then
-        check_pass "$path"
+for path in "${DATA_PATHS[@]}"; do
+    if [ -e "${path}" ]; then
+        check_pass "${path}"
     else
-        check_fail "MISSING: $path"
+        check_fail "MISSING: ${path}"
     fi
 done
 
 # --- 4. Checkpoint files check ---
 echo ""
 echo "[4/5] Checkpoint files (*.pth)..."
-NAS_CKPT_DIR="/mnt/mmlab2024nas/counting/checkpoints"
-LOCAL_CKPT_DIR="code/source-code/data"
-FOUND_CKPTS=()
-
-if [ -d "$NAS_CKPT_DIR" ]; then
-    while IFS= read -r -d '' f; do
-        FOUND_CKPTS+=("$f")
-    done < <(find "$NAS_CKPT_DIR" -name "*.pth" -print0 2>/dev/null)
-fi
-if [ -d "$LOCAL_CKPT_DIR" ]; then
-    while IFS= read -r -d '' f; do
-        FOUND_CKPTS+=("$f")
-    done < <(find "$LOCAL_CKPT_DIR" -name "*.pth" -print0 2>/dev/null)
-fi
-
-if [ ${#FOUND_CKPTS[@]} -gt 0 ]; then
-    for ckpt in "${FOUND_CKPTS[@]}"; do
-        echo "  Found: $ckpt"
-    done
-    check_pass "${#FOUND_CKPTS[@]} checkpoint(s) found"
+CKPT_DIR="code/source-code/data"
+EXPECTED_CKPTS=(
+    "${CKPT_DIR}/checkpoint_FSC.pth"
+    "${CKPT_DIR}/checkpoint__finetuning_dino_prompt.pth"
+    "${CKPT_DIR}/checkpoint__finetuning_yolo.pth"
+    "${CKPT_DIR}/checkpoint__finetuning_yolo_noprompt.pth"
+)
+FOUND_COUNT=0
+for ckpt in "${EXPECTED_CKPTS[@]}"; do
+    if [ -f "${ckpt}" ]; then
+        echo "  Found: ${ckpt}"
+        FOUND_COUNT=$((FOUND_COUNT + 1))
+    else
+        echo "  Missing: ${ckpt}"
+    fi
+done
+if [ "${FOUND_COUNT}" -gt 0 ]; then
+    check_pass "${FOUND_COUNT}/4 expected checkpoint(s) found"
 else
-    check_fail "No *.pth checkpoint files found in ${NAS_CKPT_DIR} or ${LOCAL_CKPT_DIR}"
+    check_fail "No expected checkpoint files found in ${CKPT_DIR}/"
 fi
 
-# --- 5. .env check ---
+# --- 5. .env / API key check ---
 echo ""
 echo "[5/5] .env / API key check..."
 ENV_FILE="code/source-code/.env"
-if [ -f "$ENV_FILE" ]; then
-    if grep -q "GEMINI_API_KEY" "$ENV_FILE" 2>/dev/null; then
+if [ -f "${ENV_FILE}" ]; then
+    if grep -q "GEMINI_API_KEY" "${ENV_FILE}" 2>/dev/null; then
         check_pass ".env found with GEMINI_API_KEY entry"
     else
         check_fail ".env found but GEMINI_API_KEY not set"
@@ -134,11 +134,10 @@ echo ""
 echo "=============================================="
 echo " Summary: ${PASS}/${TOTAL} checks passed"
 echo "=============================================="
-
-if [ "$FAIL" -gt 0 ]; then
+if [ "${FAIL}" -gt 0 ]; then
     echo " ${FAIL} check(s) FAILED — review output above"
     exit 1
 else
-    echo " All checks PASSED — server environment ready"
+    echo " All checks PASSED — environment ready"
     exit 0
 fi
