@@ -23,8 +23,6 @@ import util.misc as misc
 import models_mae_cross
 
 import pathlib
-temp = pathlib.PosixPath
-pathlib.PosixPath = pathlib.WindowsPath
 
 def get_args_parser():
     parser = argparse.ArgumentParser('MAE pre-training', add_help=False)
