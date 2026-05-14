@@ -46,7 +46,8 @@ fi
 echo ""
 echo "[3/8] Creating Conda env '${CONDA_ENV}' (Python 3.10)..."
 # shellcheck source=/dev/null
-source "$(conda info --base)/etc/profile.d/conda.sh"
+CONDA_BASE="${CONDA_BASE:-/opt/miniconda3}"
+source "${CONDA_BASE}/etc/profile.d/conda.sh"
 if conda env list | grep -qE "^${CONDA_ENV}[[:space:]]"; then
     echo "  Conda env '${CONDA_ENV}' already exists --- skipping creation"
 else
