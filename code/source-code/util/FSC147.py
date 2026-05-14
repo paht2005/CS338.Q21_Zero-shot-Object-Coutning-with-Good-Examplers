@@ -101,7 +101,7 @@ def get_args_parser():
 class ResizeSomeImage(object):
     def __init__(self, args):
         args = get_args_parser()
-        args = args.parse_args()
+        args, _ = args.parse_known_args()  # ignore unknown args from test/inference scripts
         # print(dir(args.im_dir.as_posix()))
         self.data_path = Path(args.data_path)
         self.im_dir = self.data_path/args.im_dir
