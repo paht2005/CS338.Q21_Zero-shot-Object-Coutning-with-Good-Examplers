@@ -35,7 +35,11 @@
 
 **Requirements:** DET-01, DET-02
 
-**Plans:** TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Install deps on server + smoke-test owlv2_pos.py & florence2_pos.py
+- [ ] 02-02-PLAN.md — Create owlv2_neg.py & florence2_neg.py (negative exemplar stream)
 
 ---
 
