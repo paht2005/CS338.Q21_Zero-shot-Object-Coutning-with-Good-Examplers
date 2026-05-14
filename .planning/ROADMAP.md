@@ -51,7 +51,13 @@ Plans:
 
 **Requirements:** DET-03, DET-04
 
-**Plans:** TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Create generate_prompt_text.py + extend generate_exemplars.sh
+- [ ] 03-02-PLAN.md — Run 4 raw exemplar generation jobs on server (DET-03)
+- [ ] 03-03-PLAN.md — Generate annotation_FSC147_pos_prompt_text.json locally (DET-04 prep)
+- [ ] 03-04-PLAN.md — Run 4 prompted exemplar generation jobs on server (DET-04)
 
 ---
 
