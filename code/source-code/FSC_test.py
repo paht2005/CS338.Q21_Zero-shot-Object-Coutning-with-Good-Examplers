@@ -238,7 +238,7 @@ def main(args):
     cudnn.benchmark = True
 
     # dataset_test = TestData(external=args.external, box_bound=args.box_bound, split=args.split)
-    dataset_test = TestData(args, split='test')
+    dataset_test = TestData(args, split=args.split)
     num_tasks = misc.get_world_size()
     global_rank = misc.get_rank()
     sampler_test = torch.utils.data.DistributedSampler(

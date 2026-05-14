@@ -23,17 +23,22 @@ echo " Output: ${OUT_BASE}"
 echo "=============================================="
 
 # Helper: run one config; skips if files missing
-# Args: NAME  ANNO_FILENAME  CKPT_PATH
+# Args: NAME  ANNO_FILENAME  NEG_ANNO_FILENAME  CKPT_PATH
 run_config() {
     local NAME="$1"
-    local ANNO_FILE="$2"  # just filename, relative to FSC_DIR
-    local CKPT="$3"
+    local ANNO_FILE="$2"      # positive annotation filename, relative to FSC_DIR
+    local NEG_ANNO_FILE="$3"  # negative annotation filename, relative to FSC_DIR
+    local CKPT="$4"
 
     echo ""
     echo "--- Config: ${NAME} ---"
 
     if [ ! -f "${FSC_DIR}/${ANNO_FILE}" ]; then
         echo "  SKIPPED: annotation file not found: ${FSC_DIR}/${ANNO_FILE}"
+        return
+    fi
+    if [ ! -f "${FSC_DIR}/${NEG_ANNO_FILE}" ]; then
+        echo "  SKIPPED: negative annotation not found: ${FSC_DIR}/${NEG_ANNO_FILE}"
         return
     fi
     if [ ! -f "${CKPT}" ]; then
@@ -44,12 +49,13 @@ run_config() {
     mkdir -p "${SRC}/output/val_${NAME}"
     cd "${SRC}"
     python FSC_test.py \
-        --data_path       "${FSC_DIR}" \
-        --anno_file       "${ANNO_FILE}" \
-        --data_split_file "Train_Test_Val_FSC_147.json" \
-        --im_dir          "images_384_VarV2" \
-        --output_dir      "output/val_${NAME}" \
-        --resume          "${CKPT}" \
+        --data_path           "${FSC_DIR}" \
+        --anno_file           "${ANNO_FILE}" \
+        --anno_file_negative  "${FSC_DIR}/${NEG_ANNO_FILE}" \
+        --data_split_file     "Train_Test_Val_FSC_147.json" \
+        --im_dir              "images_384_VarV2" \
+        --output_dir          "output/val_${NAME}" \
+        --resume              "${CKPT}" \
         --split val \
         --external \
         2>&1 | tee "${OUT_BASE}/${NAME}.log"
@@ -60,21 +66,25 @@ run_config() {
 # Config 1: VA-Count Baseline (GroundingDINO, raw prompt)
 run_config "baseline" \
     "annotation_FSC147_384.json" \
+    "annotation_FSC147_neg.json" \
     "${CKPT_DIR}/checkpoint_FSC.pth"
 
 # Config 2: VA-Count + Rich Prompt (GroundingDINO + Gemini + CLIP)
 run_config "dino_rich" \
     "annotation_FSC147_pos.json" \
+    "annotation_FSC147_neg_prompt.json" \
     "${CKPT_DIR}/checkpoint__finetuning_dino_prompt.pth"
 
 # Config 3: VA-Count + YOLO-World (no Rich Prompt)
 run_config "yolo_norich" \
-    "annotation_FSC147_pos_yolo_noprompt.json" \
+    "annotation_FSC147_pos_yolo.json" \
+    "annotation_FSC147_neg_yolo_prompt.json" \
     "${CKPT_DIR}/checkpoint__finetuning_yolo_noprompt.pth"
 
 # Config 4: VA-Count + YOLO-World + Rich Prompt
 run_config "yolo_rich" \
     "annotation_FSC147_pos_yolo_prompt.json" \
+    "annotation_FSC147_neg_yolo_prompt.json" \
     "${CKPT_DIR}/checkpoint__finetuning_yolo.pth"
 
 # --- Summary ---
