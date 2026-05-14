@@ -1,25 +1,21 @@
 """
-Generate NEGATIVE exemplar annotations using Florence-2 (Microsoft).
-Uses the OPEN_VOCABULARY_DETECTION task with negative class descriptions.
-Mirrors florence2_pos.py but inverts the binary-classifier filter so only
-non-target patches are kept.
-
-Negative exemplars are patches that look similar to the target class but are
-NOT the target class.  They are consumed by FSC_test.py via --anno_file_negative.
+Generate POSITIVE exemplar annotations using Florence-2 (Microsoft).
+Uses the OPEN_VOCABULARY_DETECTION task.
+Mirrors grounding_pos.py but replaces GroundingDINO with Florence-2.
 
 Usage:
     # Val split, no Rich Prompt
-    python florence2_neg.py \
+    python florence2_pos.py \
         --text_file ./data/FSC147/ImageClasses_FSC147.txt \
         --dataset_path ./data/FSC147/images_384_VarV2/ \
-        --output_file ./data/FSC147/annotation_FSC147_neg_florence2.json \
+        --output_file ./data/FSC147/annotation_FSC147_pos_florence2.json \
         --split val
 
     # Val split, with Rich Prompt
-    python florence2_neg.py \
+    python florence2_pos.py \
         --text_file ./data/FSC147/ImageClasses_FSC147.txt \
         --dataset_path ./data/FSC147/images_384_VarV2/ \
-        --output_file ./data/FSC147/annotation_FSC147_neg_florence2_prompt.json \
+        --output_file ./data/FSC147/annotation_FSC147_pos_florence2_prompt.json \
         --prompt \
         --split val
 
@@ -42,14 +38,14 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
 FLORENCE_MODEL_ID = "microsoft/Florence-2-large"
 FLORENCE_IMG_SIZE = 768  # Florence-2 requires square feature maps
-BINARY_THRESHOLD = 0.5   # inverted: keep patches where prob_label_1 < threshold
+BINARY_THRESHOLD = 0.8
 TOP_K_DEFAULT = 3
 
 p = inflect.engine()
 
 
 # ---------------------------------------------------------------------------
-# Binary classifier (identical to florence2_pos.py)
+# Binary classifier (identical to grounding_pos.py)
 # ---------------------------------------------------------------------------
 class ClipClassifier(nn.Module):
     def __init__(self, clip_model, embed_dim=512):
@@ -66,23 +62,17 @@ class ClipClassifier(nn.Module):
         return self.classifier(F.relu(self.fc(feats)))
 
 
-def is_negative_patch(patch, classifier, preprocess, threshold=BINARY_THRESHOLD):
-    """Return True when the patch is likely NOT the target class (good negative).
-
-    Inverted from is_valid_patch in florence2_pos.py:
-      positive: prob_label_1 > 0.8  (patch IS the target class)
-      negative: prob_label_1 < 0.5  (patch is NOT the target class)
-    """
+def is_valid_patch(patch, classifier, preprocess, threshold=BINARY_THRESHOLD):
     if patch.size[0] <= 0 or patch.size[1] <= 0:
         return False
     t = preprocess(patch).unsqueeze(0).to(device)
     with torch.no_grad():
         probs = torch.softmax(classifier(t), dim=1)
-    return probs[0, 1].item() < threshold
+    return probs[0, 1].item() > threshold
 
 
 # ---------------------------------------------------------------------------
-# Florence-2 detection (identical to florence2_pos.py)
+# Florence-2 detection
 # ---------------------------------------------------------------------------
 def detect_florence2(image_pil, class_name, processor, model):
     """
@@ -90,7 +80,7 @@ def detect_florence2(image_pil, class_name, processor, model):
 
     Args:
         image_pil: PIL Image
-        class_name: text query, e.g. "not apple" or a negative Rich Prompt description
+        class_name: text query, e.g. "apple" or a Rich Prompt description
     Returns:
         list of [x, y, w, h] in pixel coords (float)
     """
@@ -135,7 +125,7 @@ def detect_florence2(image_pil, class_name, processor, model):
 
 
 # ---------------------------------------------------------------------------
-# CLIP re-ranking — ascending (worst match = best negative)
+# CLIP re-ranking
 # ---------------------------------------------------------------------------
 def clip_score(patch_pil, class_name, clip_model_l14, preprocess_l14):
     text = clip.tokenize([class_name]).to(device)
@@ -153,22 +143,21 @@ def clip_score(patch_pil, class_name, clip_model_l14, preprocess_l14):
 # ---------------------------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate negative exemplar annotations with Florence-2"
+        description="Generate positive exemplar annotations with Florence-2"
     )
     parser.add_argument("--text_file", required=True,
                         help="ImageClasses_FSC147.txt (image_name TAB class_name)")
     parser.add_argument("--dataset_path", required=True,
                         help="Directory containing FSC-147 images")
     parser.add_argument("--output_file", required=True,
-                        help="Output JSON annotation file "
-                             "(e.g. annotation_FSC147_neg_florence2.json)")
+                        help="Output JSON annotation file")
     parser.add_argument("--prompt", action="store_true",
-                        help="Use Rich Prompt negative descriptions")
+                        help="Use Rich Prompt positive descriptions")
     parser.add_argument("--prompt_file",
                         default="./data/FSC147/annotation_FSC147_pos_prompt_text.json",
-                        help="JSON with {image_name: {negative_descriptions: [...]}}")
+                        help="JSON with {image_name: {positive_descriptions: [...]}}")
     parser.add_argument("--top_k", type=int, default=TOP_K_DEFAULT,
-                        help="Max negative exemplars to keep per image")
+                        help="Max exemplars to keep per image")
     parser.add_argument("--split_file",
                         default="./data/FSC147/Train_Test_Val_FSC_147.json")
     parser.add_argument("--split", default="val",
@@ -242,31 +231,30 @@ def main():
         class_name = class_map.get(img_name, "object")
         singular = p.singular_noun(class_name) or class_name
 
-        # Build negative query (Florence-2 takes a single string)
+        # Build query
         if args.prompt and img_name in prompt_map:
-            neg_descs = prompt_map[img_name].get("negative_descriptions", [])
-            query = neg_descs[0] if neg_descs else f"not {singular}"
+            descs = prompt_map[img_name].get("positive_descriptions", [])
+            query = descs[0] if descs else singular
         else:
-            query = f"not {singular}"
+            query = singular
 
         boxes = detect_florence2(image, query, fl_processor, fl_model)
 
-        # Inverted binary-classifier filter + CLIP re-ranking ascending
+        # Binary-classifier filter + CLIP re-ranking
         scored = []
         for box in boxes:
             x, y, w_, h_ = int(box[0]), int(box[1]), int(box[2]), int(box[3])
             crop = image.crop((x, y, x + w_, y + h_))
-            if is_negative_patch(crop, classifier, preprocess_b32):
+            if is_valid_patch(crop, classifier, preprocess_b32):
                 s = clip_score(crop, singular, clip_l14, preprocess_l14)
                 scored.append((s, box))
 
-        # Ascending sort: lowest CLIP similarity to target = best negative
-        scored.sort(key=lambda t: t[0])
+        scored.sort(key=lambda t: t[0], reverse=True)
         valid_boxes = [b for _, b in scored[: args.top_k]]
 
         annotations[img_name] = {"H": H, "W": W, "boxes": valid_boxes}
         print(f"  [{i}/{len(image_files)}] {img_name}: "
-              f"{len(boxes)} detected -> {len(valid_boxes)} neg kept")
+              f"{len(boxes)} detected -> {len(valid_boxes)} kept")
 
     os.makedirs(os.path.dirname(os.path.abspath(args.output_file)), exist_ok=True)
     with open(args.output_file, "w") as f:
