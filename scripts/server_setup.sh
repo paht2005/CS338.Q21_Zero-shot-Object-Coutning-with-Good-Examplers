@@ -78,6 +78,22 @@ echo ""
 echo "[7/8] Installing CLIP..."
 pip install git+https://github.com/openai/CLIP.git
 
+
+# --- 7b. Set HuggingFace cache to NAS (prevents /home disk fill) ---
+echo ""
+echo "[7b] Configuring HuggingFace model cache -> NAS..."
+grep -q 'HF_HOME' ~/.bashrc || echo 'export HF_HOME=/mnt/mmlab2024nas/counting/hf_cache' >> ~/.bashrc
+grep -q 'TRANSFORMERS_CACHE' ~/.bashrc || echo 'export TRANSFORMERS_CACHE=/mnt/mmlab2024nas/counting/hf_cache' >> ~/.bashrc
+export HF_HOME=/mnt/mmlab2024nas/counting/hf_cache
+export TRANSFORMERS_CACHE=/mnt/mmlab2024nas/counting/hf_cache
+mkdir -p "${HF_HOME}"
+echo "  HF_HOME -> ${HF_HOME}"
+
+# --- 7c. Install OWL-v2 / Florence-2 dependencies ---
+echo ""
+echo "[7c] Installing transformers, accelerate, einops, timm..."
+pip install transformers accelerate einops timm
+echo "  OWL-v2 / Florence-2 deps installed."
 # --- 8. Check NAS data paths ---
 echo ""
 echo "[8/8] Checking NAS data paths at ${NAS_DATA}/FSC147/..."
