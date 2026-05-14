@@ -13,6 +13,7 @@ FSC_DIR="${DATA_BASE}/FSC147"
 CKPT_DIR="${DATA_BASE}"
 SRC="${REPO_ROOT}/code/source-code"
 OUT_BASE="${REPO_ROOT}/experiments/server-val-baseline"
+PYTHON="${PYTHON:-/home/counting/.conda/envs/cs338/bin/python3}"
 
 mkdir -p "${OUT_BASE}"
 
@@ -48,7 +49,7 @@ run_config() {
 
     mkdir -p "${SRC}/output/val_${NAME}"
     cd "${SRC}"
-    python FSC_test.py \
+    "${PYTHON}" FSC_test.py \
         --data_path           "${FSC_DIR}" \
         --anno_file           "${ANNO_FILE}" \
         --anno_file_negative  "${FSC_DIR}/${NEG_ANNO_FILE}" \
