@@ -20,7 +20,7 @@ Validate the scalability claim of Rich Prompts across detectors **and** have a p
 
 ### Active
 
-- [ ] Run val-split evaluation of all 4 baseline configs on server (phatcnguyen@sandbox.netbird.cloud)
+- [ ] Run val-split evaluation of all 4 baseline configs on server (counting@192.168.6.200)
 - [ ] Identify 1–2 additional open-world detectors compatible with the EEM pipeline
 - [ ] Generate exemplars and run val-split evaluation for additional detectors (with and without Rich Prompts)
 - [ ] Compile results table showing Rich Prompts reduce MAE across all detectors
@@ -37,8 +37,8 @@ Validate the scalability claim of Rich Prompts across detectors **and** have a p
 ## Context
 
 - **Paper target**: MAPR 2026 (IEEE conference format, IEEEtran)
-- **Server**: `ssh phatcnguyen@sandbox.netbird.cloud` (pass: 1), has CUDA 13.2 + Python 3.12 venv (Tesla T4)
-- **Data location on server**: `~/cs338-counting/code/source-code/data` (not `/home/`)
+- **Server**: `ssh counting@192.168.6.200` (pass: 1), has Docker + Conda, GPU TBD
+- **Data location on server**: `/mnt/mmlab2024nas/counting` (not `/home/`)
 - **GPU**: RTX 4060 on the lab workstation (existing experiments), server GPU TBD
 - **Existing results** (test split):
   - VA-Count baseline (GDino, raw): MAE 17.99, RMSE 129.39
@@ -50,8 +50,8 @@ Validate the scalability claim of Rich Prompts across detectors **and** have a p
 
 ## Constraints
 
-- **Hardware**: Must use `~/cs338-counting/code/source-code/data` for data on server, not `/home/`
-- **Compute**: Server environment: Docker or Conda (whichever is easiest to reproduce)
+- **Hardware**: Must use `/mnt/mmlab2024nas/counting` for data on server, not `/home/`
+- **Compute**: Server environment: Conda (primary) or Docker — both available on server
 - **Paper style**: IEEE conference (IEEEtran), keep abstract unchanged
 - **Detector compatibility**: New detectors must support text-prompt → bounding-box output to plug into existing EEM
 
@@ -62,7 +62,7 @@ Validate the scalability claim of Rich Prompts across detectors **and** have a p
 | Use val split (not test) for additional detectors | Test split already used for main results; val split avoids overfitting the claim | — Pending |
 | Keep Abstract unchanged | Mentor/author instruction | ✓ Good |
 | Rewrite from scratch (not edit) | Current prose too list-like to fix incrementally | — Pending |
-| Run on remote server | Local GPU insufficient for parallel multi-detector runs | — Pending |
+| Run on remote server | Local GPU insufficient for parallel multi-detector runs | counting@192.168.6.200 confirmed |
 
 ---
-*Last updated: 2026-05-12 after initialization*
+*Last updated: 2026-05-14 — server updated to counting@192.168.6.200, data at /mnt/mmlab2024nas/counting, Conda environment*

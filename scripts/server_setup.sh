@@ -1,29 +1,39 @@
 #!/usr/bin/env bash
-# Bootstrap the project environment on sandbox.netbird.cloud (phatcnguyen@sandbox.netbird.cloud).
+# Bootstrap the project environment on counting@192.168.6.200 (lab server, mmlab2024).
 # Run from the repo root after SSH-ing into the server.
 # Usage: bash scripts/server_setup.sh
 #
 # Prerequisites on server:
-#   - Python 3.12 (system) + git available
-#   - CUDA 13.2 at /usr/local/cuda-13.2
-#   - Enough disk space (~25GB for data + env)
+#   - Conda (Miniconda / Anaconda) available
+#   - NAS mounted at /mnt/mmlab2024nas
+#   - Git available
 
 set -euo pipefail
 
 REPO_URL="https://github.com/paht2005/CS338.Q21_Zero-shot-Object-Coutning-with-Good-Examplers.git"
 REPO_DIR="${HOME}/cs338-counting"
-VENV_DIR="${REPO_DIR}/.venv"
-CUDA_HOME_PATH="/usr/local/cuda-13.2"
+CONDA_ENV="cs338"
+NAS_DATA="/mnt/mmlab2024nas/counting"
 
 echo "=============================================="
-echo " VA-Count Server Setup — sandbox.netbird.cloud"
+echo " VA-Count Server Setup --- counting@192.168.6.200"
 echo "=============================================="
 
-# --- 1. Clone or update repo ---
+# --- 1. Check NAS mount ---
 echo ""
-echo "[1/8] Cloning / updating repository..."
+echo "[1/8] Checking NAS mount at ${NAS_DATA}..."
+if [ ! -d "${NAS_DATA}" ]; then
+    echo "  ERROR: NAS directory ${NAS_DATA} does not exist."
+    echo "  Ensure /mnt/mmlab2024nas is mounted before running this script."
+    exit 1
+fi
+echo "  NAS OK: ${NAS_DATA}"
+
+# --- 2. Clone or update repo ---
+echo ""
+echo "[2/8] Cloning / updating repository..."
 if [ -d "${REPO_DIR}/.git" ]; then
-    echo "  Repo exists — pulling latest..."
+    echo "  Repo exists --- pulling latest..."
     cd "${REPO_DIR}"
     git pull
 else
@@ -32,51 +42,49 @@ else
     cd "${REPO_DIR}"
 fi
 
-# --- 2. Create Python 3.12 venv ---
+# --- 3. Create Conda environment ---
 echo ""
-echo "[2/8] Creating Python 3.12 venv at ${VENV_DIR}..."
-if [ -d "${VENV_DIR}" ]; then
-    echo "  venv already exists — skipping creation"
+echo "[3/8] Creating Conda env '${CONDA_ENV}' (Python 3.10)..."
+# shellcheck source=/dev/null
+source "$(conda info --base)/etc/profile.d/conda.sh"
+if conda env list | grep -qE "^${CONDA_ENV}[[:space:]]"; then
+    echo "  Conda env '${CONDA_ENV}' already exists --- skipping creation"
 else
-    python3 -m venv "${VENV_DIR}"
+    conda create -n "${CONDA_ENV}" python=3.10 -y
 fi
-source "${VENV_DIR}/bin/activate"
+conda activate "${CONDA_ENV}"
 echo "  Python: $(python --version)"
-echo "  pip: $(pip --version)"
 
-# --- 3. Install PyTorch (cu121 — compatible with CUDA 13.2 hardware) ---
+# --- 4. Install PyTorch with CUDA (conda-managed, cuda 12.1 default) ---
 echo ""
-echo "[3/8] Installing PyTorch with CUDA 12.1 index (compatible with CUDA 13.2 hardware)..."
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+echo "[4/8] Installing PyTorch (pytorch-cuda=12.1 --- change if server CUDA differs)..."
+conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia -y
 
-# --- 4. Install GroundingDINO (editable, needs CUDA headers) ---
+# --- 5. Install GroundingDINO (editable) ---
 echo ""
-echo "[4/8] Installing GroundingDINO (editable build)..."
-export CUDA_HOME="${CUDA_HOME_PATH}"
-export PATH="${CUDA_HOME}/bin:${PATH}"
-cd code/source-code/GroundingDINO
+echo "[5/8] Installing GroundingDINO (editable build)..."
+cd "${REPO_DIR}/code/source-code/GroundingDINO"
 pip install -e .
-cd ../../..
+cd "${REPO_DIR}"
 
-# --- 5. Install main project dependencies ---
+# --- 6. Install main project dependencies ---
 echo ""
-echo "[5/8] Installing project dependencies from requirements.txt..."
+echo "[6/8] Installing project dependencies from requirements.txt..."
 pip install -r code/source-code/requirements.txt
 
-# --- 6. Install CLIP ---
+# --- 7. Install CLIP ---
 echo ""
-echo "[6/8] Installing CLIP..."
+echo "[7/8] Installing CLIP..."
 pip install git+https://github.com/openai/CLIP.git
 
-# --- 7. Check local data paths ---
+# --- 8. Check NAS data paths ---
 echo ""
-echo "[7/8] Checking local data paths..."
-LOCAL_DATA="code/source-code/data/FSC147"
+echo "[8/8] Checking NAS data paths at ${NAS_DATA}/FSC147/..."
 DATA_PATHS=(
-    "${LOCAL_DATA}/images_384_VarV2"
-    "${LOCAL_DATA}/gt_density_map_adaptive_384_VarV2"
-    "${LOCAL_DATA}/Train_Test_Val_FSC_147.json"
-    "${LOCAL_DATA}/annotation_FSC147_384.json"
+    "${NAS_DATA}/FSC147/images_384_VarV2"
+    "${NAS_DATA}/FSC147/gt_density_map_adaptive_384_VarV2"
+    "${NAS_DATA}/FSC147/Train_Test_Val_FSC_147.json"
+    "${NAS_DATA}/FSC147/annotation_FSC147_384.json"
 )
 ALL_OK=true
 for path in "${DATA_PATHS[@]}"; do
@@ -89,41 +97,44 @@ for path in "${DATA_PATHS[@]}"; do
 done
 if [ "${ALL_OK}" = false ]; then
     echo ""
-    echo "  WARNING: FSC-147 data not found. Upload data to:"
-    echo "    ${REPO_DIR}/${LOCAL_DATA}/"
-    echo "  Expected structure:"
-    echo "    data/FSC147/"
+    echo "  WARNING: FSC-147 data incomplete on NAS."
+    echo "  Upload data to ${NAS_DATA}/FSC147/ with structure:"
+    echo "    FSC147/"
     echo "    ├── images_384_VarV2/          (~6135 images)"
     echo "    ├── gt_density_map_adaptive_384_VarV2/"
     echo "    ├── Train_Test_Val_FSC_147.json"
     echo "    └── annotation_FSC147_384.json"
 fi
 
-# --- 8. List checkpoint files ---
+# --- Checkpoint check ---
 echo ""
-echo "[8/8] Listing checkpoint files (*.pth)..."
-find code/source-code/data/ -name "*.pth" -not -path "*/.venv/*" 2>/dev/null | grep -v "venv\|site-packages" || echo "  No .pth checkpoints found — upload checkpoints to code/source-code/data/"
-echo ""
-echo "  Expected checkpoint names:"
-echo "    checkpoint_FSC.pth"
-echo "    checkpoint__finetuning_dino_prompt.pth"
-echo "    checkpoint__finetuning_yolo.pth"
-echo "    checkpoint__finetuning_yolo_noprompt.pth"
+echo "Checking checkpoints at ${NAS_DATA}/..."
+EXPECTED_CKPTS=(
+    "checkpoint_FSC.pth"
+    "checkpoint__finetuning_dino_prompt.pth"
+    "checkpoint__finetuning_yolo.pth"
+    "checkpoint__finetuning_yolo_noprompt.pth"
+)
+for ckpt in "${EXPECTED_CKPTS[@]}"; do
+    if [ -f "${NAS_DATA}/${ckpt}" ]; then
+        echo "  Found: ${ckpt}"
+    else
+        echo "  Missing: ${ckpt} --- upload to ${NAS_DATA}/"
+    fi
+done
 
 # --- .env reminder ---
 echo ""
-ENV_FILE="code/source-code/.env"
+ENV_FILE="${REPO_DIR}/code/source-code/.env"
 if [ -f "${ENV_FILE}" ]; then
     echo ".env found at ${ENV_FILE}"
 else
-    echo "WARNING: No .env found. Copy code/source-code/.env.example → code/source-code/.env"
-    echo "  Then set: GEMINI_API_KEY=<your_key>"
-    echo "  IMPORTANT: Do NOT commit .env to git"
+    echo "WARNING: No .env found. Copy .env.example -> .env and set GEMINI_API_KEY."
 fi
 
 echo ""
 echo "=============================================="
-echo " Setup complete."
-echo " Activate venv:  source ${VENV_DIR}/bin/activate"
-echo " Run smoke test: bash scripts/verify_env.sh"
+echo " Setup complete!"
+echo " Activate env : conda activate ${CONDA_ENV}"
+echo " Data (NAS)   : ${NAS_DATA}"
 echo "=============================================="

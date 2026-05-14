@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# Run val-split evaluation for all 4 pipeline configurations on sandbox.netbird.cloud.
-# Run from the repo root with .venv activated.
-# Usage: source .venv/bin/activate && bash scripts/run_evaluation_val.sh
+# Run val-split evaluation for all 4 pipeline configurations on counting@192.168.6.200.
+# Run from the repo root with the conda env activated.
+# Usage: conda activate cs338 && bash scripts/run_evaluation_val.sh
+# Override data path: DATA_BASE=/path/to/data bash scripts/run_evaluation_val.sh
 
 set -uo pipefail
 
 # --- Paths (all absolute from repo root) ---
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DATA_BASE="${DATA_BASE:-${REPO_ROOT}/code/source-code/data}"
+DATA_BASE="${DATA_BASE:-/mnt/mmlab2024nas/counting}"
 FSC_DIR="${DATA_BASE}/FSC147"
 CKPT_DIR="${DATA_BASE}"
 SRC="${REPO_ROOT}/code/source-code"
