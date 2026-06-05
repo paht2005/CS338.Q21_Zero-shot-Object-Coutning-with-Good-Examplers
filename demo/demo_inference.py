@@ -90,7 +90,7 @@ def load_yolo_model(model_path, device="cuda"):
 def load_grounding_dino(device="cuda"):
     """Load GroundingDINO model"""
     print("Loading GroundingDINO...")
-    from GroundingDINO.groundingdino.util.inference import load_model
+    from groundingdino.util.inference import load_model
 
     config_file = "./GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py"
     checkpoint_path = "./GroundingDINO/weights/groundingdino_swint_ogc.pth"
@@ -179,7 +179,7 @@ def detect_with_grounding_dino(
     Detect objects using GroundingDINO with filtering for dense objects
     Returns: boxes, scores, detection_time
     """
-    from GroundingDINO.groundingdino.util.inference import load_image, predict
+    from groundingdino.util.inference import load_image, predict
     from torchvision.ops import box_convert
     import tempfile
     import os
